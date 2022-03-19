@@ -1,16 +1,25 @@
 <script lang="ts">
     import { defaultBoard } from "./Chess";
+    import { fade } from "svelte/transition";
     import BoardSpot from "./BoardSpot.svelte";
+import { onMount } from "svelte";
     let board = defaultBoard;
+
+    let showing = false;
+    onMount(() => showing = true);
 </script>
 
 <div class="wrapper">
     <div class="board">
-        {#each board as row, y}
-            {#each row as piece, x}
-                <BoardSpot value={piece} x={x} y={y}/>
+        {#if showing}
+            {#each board as row, y}
+                {#each row as piece, x}
+                    <div transition:fade={{delay: (y * 8 + x) * 35 + 350, duration: 300}}>
+                        <BoardSpot value={piece} x={x} y={y}/>
+                    </div>
+                {/each}
             {/each}
-        {/each}
+        {/if}
     </div>
 </div>
 

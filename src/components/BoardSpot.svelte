@@ -15,6 +15,11 @@
 </div>
 
 <style>
+    .board-spot {
+        width: 100%;
+        height: 100%;
+    }
+
     .light {
         background-color: rgb(228, 209, 179);
     }
