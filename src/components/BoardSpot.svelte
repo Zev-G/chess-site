@@ -7,5 +7,14 @@
 </script>
 
 <div class={"board-spot" + (light ? " light" : " dark")}>
-    {value}
+    
 </div>
+
+<style>
+    .light {
+        background-color: rgb(228, 209, 179);
+    }
+    .dark {
+        background-color: rgb(71, 64, 51);
+    }
+</style>
