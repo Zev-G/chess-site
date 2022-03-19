@@ -1,3 +1,5 @@
-<h1>
-    No content yet :).
-</h1>
+<script lang="ts">
+    import ChessBoard from "../components/ChessBoard.svelte";
+</script>
+
+<ChessBoard/>
