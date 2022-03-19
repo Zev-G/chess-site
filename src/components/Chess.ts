@@ -28,20 +28,20 @@ Pieces:
 
 export const images = {
     white: {
-        pawn: "",
-        knight: "",
-        bishop: "",
-        rook: "",
-        queen: "",
-        king: ""
+        pawn:   "/white/pawn.png",
+        knight: "/white/knight.png",
+        bishop: "/white/bishop.png",
+        rook:   "/white/rook.png",
+        queen:  "/white/queen.png",
+        king:   "/white/king.png"
     },
     black: {
-        pawn: "",
-        knight: "",
-        bishop: "",
-        rook: "",
-        queen: "",
-        king: ""
+        pawn:   "/black/pawn.png",
+        knight: "/black/knight.png",
+        bishop: "/black/bishop.png",
+        rook:   "/black/rook.png",
+        queen:  "/black/queen.png",
+        king:   "/black/king.png"
     }
 };
 

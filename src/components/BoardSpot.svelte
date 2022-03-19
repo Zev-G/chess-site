@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { imageMap } from "./Chess";
+
     export let value: number;
     export let x: number;
     export let y: number;
@@ -7,7 +9,9 @@
 </script>
 
 <div class={"board-spot" + (light ? " light" : " dark")}>
-    
+    {#if value !== -1}
+        <img src={imageMap[value]} alt="Chess piece">
+    {/if}
 </div>
 
 <style>
@@ -16,5 +20,9 @@
     }
     .dark {
         background-color: rgb(71, 64, 51);
+    }
+
+    img {
+        width: 100%;
     }
 </style>
