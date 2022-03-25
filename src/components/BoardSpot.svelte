@@ -1,20 +1,44 @@
 <script lang="ts">
-    import { imageMap } from "./Chess";
+    import { createEventDispatcher } from "svelte"; 
 
-    export let value: number;
+    import { Game, imageMap } from "./Chess";
+
+    let eventDispatcher = createEventDispatcher();
+
+    export let value: number = -1;
     export let x: number;
     export let y: number;
+    export let board: number[][];
+    export let possibleMoves: number[];
 
-    $: light = (x + y) % 2 == 0;
+    let flatValue = y * 8 + x;
+
+    $: light = (y + x) % 2 == 0;
+    $: showMove = possibleMoves.indexOf(flatValue) != -1;
+
+    function pressed(): void {
+        eventDispatcher("movesRequested", {
+            x, y
+        });
+    }
 </script>
 
-<div class={"board-spot" + (light ? " light" : " dark")}>
+<div class={"board-spot" + (light ? " light" : " dark")} on:click={pressed}>
     {#if value !== -1}
         <img src={imageMap[value]} alt="Chess piece">
+    {/if}
+    {#if showMove}
+        <div class="move-marker">
+            asdf
+        </div>
     {/if}
 </div>
 
 <style>
+    .move-marker {
+        position: absolute;
+    }
+
     .board-spot {
         width: 100%;
         height: 100%;

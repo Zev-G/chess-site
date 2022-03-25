@@ -1,12 +1,33 @@
 <script lang="ts">
-    import { defaultBoard } from "./Chess";
+    import { defaultBoard, findMoves, Move } from "./Chess";
     import { fade } from "svelte/transition";
     import BoardSpot from "./BoardSpot.svelte";
-import { onMount } from "svelte";
+    import { onMount } from "svelte";
     let board = defaultBoard;
+
+    let possibleMoves: Move[] = [];
+    let possibleMoveSpots: number[] = [];
 
     let showing = false;
     onMount(() => showing = true);
+
+    function generateMoves(event) {
+        // return;
+        let x: number = event.detail.x as number;
+        let y: number = event.detail.y as number;
+        let piece = board[y][x];
+        if (piece == -1) {
+            possibleMoves = [];
+            possibleMoveSpots = [];
+        } else {
+            console.log(`piece: ${piece}`);
+            possibleMoves = findMoves({
+                type: piece,
+                x, y
+            }, board);
+            possibleMoveSpots = possibleMoves.map((move) => move.y * 8 + x);
+        }
+    }
 </script>
 
 <div class="wrapper">
@@ -15,7 +36,7 @@ import { onMount } from "svelte";
             {#each board as row, y}
                 {#each row as piece, x}
                     <div transition:fade={{delay: (y * 8 + x) * 35 + 350, duration: 300}}>
-                        <BoardSpot value={piece} x={x} y={y}/>
+                        <BoardSpot possibleMoves={possibleMoveSpots} on:movesRequested={generateMoves} board={board} value={piece} x={x} y={y}/>
                     </div>
                 {/each}
             {/each}
