@@ -23,14 +23,9 @@
     }
 </script>
 
-<div class={"board-spot" + (light ? " light" : " dark")} on:click={pressed}>
+<div class={"board-spot" + (light ? " light" : " dark") + (showMove ? " is-move" : "")} on:click={pressed}>
     {#if value !== -1}
         <img src={imageMap[value]} alt="Chess piece">
-    {/if}
-    {#if showMove}
-        <div class="move-marker">
-            asdf
-        </div>
     {/if}
 </div>
 
@@ -53,5 +48,9 @@
 
     img {
         width: 100%;
+    }
+
+    .is-move {
+        background-color: rgba(150, 0, 0, 0.2);
     }
 </style>

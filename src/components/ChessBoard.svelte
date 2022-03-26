@@ -20,12 +20,11 @@
             possibleMoves = [];
             possibleMoveSpots = [];
         } else {
-            console.log(`piece: ${piece}`);
             possibleMoves = findMoves({
                 type: piece,
                 x, y
             }, board);
-            possibleMoveSpots = possibleMoves.map((move) => move.y * 8 + x);
+            possibleMoveSpots = possibleMoves.map((move) => move.y * 8 + move.x);
         }
     }
 </script>

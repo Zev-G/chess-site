@@ -113,7 +113,7 @@ export function pieceKind(type: number): any {
 }
 
 export function isEnemy(board: number[][], team: boolean, x: number, y: number): boolean {
-    return pieceTeam(board[y][x]) != team;
+    return pieceTeam(board[y][x]) === !team;
 }
 
 export function isEmpty(board: number[][], x: number, y: number): boolean {
@@ -142,7 +142,7 @@ export function findMoves(piece: Piece, board: number[][]): Move[] {
             moves.push(new SimpleMove(type, x, y, x, y + displace));
         }
         // Take
-        if (isValid(x + 1, y + displace) && isEnemy(board, team, x + 1, y + displace)) {            
+        if (isValid(x + 1, y + displace) && isEnemy(board, team, x + 1, y + displace)) {     
             moves.push(new SimpleMove(type, x, y, x + 1, y + displace));
         }
         if (isValid(x - 1, y + displace) && isEnemy(board, team, x - 1, y + displace)) {
