@@ -240,7 +240,31 @@ export function findMoves(piece: Piece, board: number[][]): Move[] {
         rookMoves();
     // King movement
     } else if (pieceType == 5) {
-
+        // TODO stop king from moving into check.
+        if (isValid(x + 1, y + 1) && isEnemyOrEmpty(board, team, x + 1, y + 1)) {
+            moves.push(new SimpleMove(type, x, y, x + 1, y + 1));
+        }
+        if (isValid(x, y + 1) && isEnemyOrEmpty(board, team, x, y + 1)) {
+            moves.push(new SimpleMove(type, x, y, x, y + 1));
+        }
+        if (isValid(x - 1, y + 1) && isEnemyOrEmpty(board, team, x - 1, y + 1)) {
+            moves.push(new SimpleMove(type, x, y, x - 1, y + 1));
+        }
+        if (isValid(x + 1, y) && isEnemyOrEmpty(board, team, x + 1, y)) {
+            moves.push(new SimpleMove(type, x, y, x + 1, y));
+        }
+        if (isValid(x - 1, y) && isEnemyOrEmpty(board, team, x - 1, y)) {
+            moves.push(new SimpleMove(type, x, y, x - 1, y));
+        }
+        if (isValid(x + 1, y - 1) && isEnemyOrEmpty(board, team, x + 1, y - 1)) {
+            moves.push(new SimpleMove(type, x, y, x + 1, y - 1));
+        }
+        if (isValid(x, y - 1) && isEnemyOrEmpty(board, team, x, y - 1)) {
+            moves.push(new SimpleMove(type, x, y, x, y - 1));
+        }
+        if (isValid(x - 1, y - 1) && isEnemyOrEmpty(board, team, x - 1, y - 1)) {
+            moves.push(new SimpleMove(type, x, y, x - 1, y - 1));
+        }
     }
 
     return moves;
