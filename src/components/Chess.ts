@@ -120,6 +120,10 @@ export function isEmpty(board: number[][], x: number, y: number): boolean {
     return board[y][x] == -1;
 }
 
+export function isEnemyOrEmpty(board: number[][], team: boolean, x: number, y: number): boolean {
+    return isEmpty(board, x, y) || isEnemy(board, team, x, y);
+}
+
 export function isValid(x: number, y: number): boolean {
     return x >= 0 && x < 8 && y >= 0 && y < 8;
 }
@@ -133,9 +137,9 @@ export function findMoves(piece: Piece, board: number[][]): Move[] {
     let pieceType: number = pieceKind(type);
     let team = pieceTeam(type);
 
+    let moves: Move[] = [];
     // Pawn movement
     if (pieceType == 0) {
-        let moves: Move[] = [];
         // Move forward 1
         let displace = team ? -1 : 1;
         if (isValid(x, y + displace) && isEmpty(board, x, y + displace)) {
@@ -152,13 +156,48 @@ export function findMoves(piece: Piece, board: number[][]): Move[] {
         if (isValid(x, y + displace * 2) && pawnHasNotMoved(type) && isEmpty(board, x, y + displace * 2) && isEmpty(board, x, y + displace)) {
             moves.push(new SimpleMove(type, x, y, x, y + displace * 2));
         }
-        return moves;
-    }
-
     // Knight movement
-    if (pieceType == 1) {
+    } else if (pieceType == 1) {
+        if (isValid(x + 1, y + 2) && isEnemyOrEmpty(board, team, x + 1, y + 2)) {
+            moves.push(new SimpleMove(type, x, y, x + 1, y + 2));
+        }
+        if (isValid(x + 1, y - 2) && isEnemyOrEmpty(board, team, x + 1, y - 2)) {
+            moves.push(new SimpleMove(type, x, y, x + 1, y - 2));
+        }
+        if (isValid(x - 1, y + 2) && isEnemyOrEmpty(board, team, x - 1, y + 2)) {
+            moves.push(new SimpleMove(type, x, y, x - 1, y + 2));
+        }
+        if (isValid(x - 1, y - 2) && isEnemyOrEmpty(board, team, x - 1, y - 2)) {
+            moves.push(new SimpleMove(type, x, y, x - 1, y - 2));
+        }
+
+        if (isValid(x + 2, y + 1) && isEnemyOrEmpty(board, team, x + 2, y + 1)) {
+            moves.push(new SimpleMove(type, x, y, x + 2, y + 1));
+        }
+        if (isValid(x + 2, y - 1) && isEnemyOrEmpty(board, team, x + 2, y - 1)) {
+            moves.push(new SimpleMove(type, x, y, x + 2, y - 1));
+        }
+        if (isValid(x - 2, y + 1) && isEnemyOrEmpty(board, team, x - 2, y + 1)) {
+            moves.push(new SimpleMove(type, x, y, x - 2, y + 1));
+        }
+        if (isValid(x - 2, y - 1) && isEnemyOrEmpty(board, team, x - 2, y - 1)) {
+            moves.push(new SimpleMove(type, x, y, x - 2, y - 1));
+        }
+    // Bishop movement
+    } else if (pieceType == 2) {
+
+    // Rook movement
+    } else if (pieceType == 3) {
+
+    // Queen movement
+    } else if (pieceType == 4) {
+
+    // King movement
+    } else if (pieceType == 5) {
 
     }
+
+    return moves;
 }
 
 export abstract class Move {
