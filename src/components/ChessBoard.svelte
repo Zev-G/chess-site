@@ -11,10 +11,30 @@
     let showing = false;
     onMount(() => showing = true);
 
-    function generateMoves(event) {
-        // return;
+    function movesRequested(event): void {
         let x: number = event.detail.x as number;
         let y: number = event.detail.y as number;
+        if (possibleMoveSpots.indexOf(y * 8 + x) != -1) {
+            move(x, y);
+        } else {
+            generateMoves(x, y);
+        }
+    }
+
+    function move(x: number, y: number): void {
+        for (let move of possibleMoves) {
+            if (move.x == x && move.y == y) {
+                move.do(board);
+                board = [... board];
+                possibleMoves = [];
+                possibleMoveSpots = [];
+                return;
+            }
+        }
+    }
+
+    function generateMoves(x: number, y: number): void {
+        // return;
         let piece = board[y][x];
         if (piece == -1) {
             possibleMoves = [];
@@ -35,7 +55,7 @@
             {#each board as row, y}
                 {#each row as piece, x}
                     <div transition:fade={{delay: (y * 8 + x) * 35 + 350, duration: 300}}>
-                        <BoardSpot possibleMoves={possibleMoveSpots} on:movesRequested={generateMoves} board={board} value={piece} x={x} y={y}/>
+                        <BoardSpot possibleMoves={possibleMoveSpots} on:movesRequested={movesRequested} board={board} value={piece} x={x} y={y}/>
                     </div>
                 {/each}
             {/each}

@@ -75,7 +75,7 @@ export const defaultBoard: number[][] = [
     [-1, -1, -1, -1, -1, -1, -1, -1],
     [-1, -1, -1, -1, -1, -1, -1, -1],
     [-1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, 10, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1],
     [0,  0,  0,  0,  0,  0,  0,  0 ],
     [5,  3,  4,  7,  8,  4,  3,  5 ]
 ];
@@ -143,18 +143,18 @@ export function findMoves(piece: Piece, board: number[][]): Move[] {
         // Move forward 1
         let displace = team ? -1 : 1;
         if (isValid(x, y + displace) && isEmpty(board, x, y + displace)) {
-            moves.push(new SimpleMove(type, x, y, x, y + displace));
+            moves.push(new PawnMove(type, x, y, x, y + displace));
         }
         // Take
         if (isValid(x + 1, y + displace) && isEnemy(board, team, x + 1, y + displace)) {     
-            moves.push(new SimpleMove(type, x, y, x + 1, y + displace));
+            moves.push(new PawnMove(type, x, y, x + 1, y + displace));
         }
         if (isValid(x - 1, y + displace) && isEnemy(board, team, x - 1, y + displace)) {
-            moves.push(new SimpleMove(type, x, y, x - 1, y + displace));
+            moves.push(new PawnMove(type, x, y, x - 1, y + displace));
         }
         // Move forawrd two:
         if (isValid(x, y + displace * 2) && pawnHasNotMoved(type) && isEmpty(board, x, y + displace * 2) && isEmpty(board, x, y + displace)) {
-            moves.push(new SimpleMove(type, x, y, x, y + displace * 2));
+            moves.push(new PawnMoveTwoForward(type, x, y, x, y + displace * 2));
         }
     // Knight movement
     } else if (pieceType == 1) {
@@ -215,7 +215,7 @@ export abstract class Move {
     abstract undo(board: number[][]): void;
 }
 
-export class SimpleMove extends Move {
+class SimpleMove extends Move {
 
     fromX: number;
     fromY: number;
@@ -237,7 +237,57 @@ export class SimpleMove extends Move {
         board[this.y][this.x] = this.initalValue;
     }
 
-    
+}
+
+class PawnMoveTwoForward extends Move {
+
+    fromX: number;
+    fromY: number;
+    replacement: number;
+
+    constructor(piece: number, fromX: number, fromY: number, x: number, y: number) {
+        super([ piece ], x, y);
+        this.fromX = fromX;
+        this.fromY = fromY;
+        
+        this.replacement = piece + 1;
+    }
+
+    do(board: number[][]): void {
+        board[this.fromY][this.fromX] = -1;
+        board[this.y][this.x] = this.replacement;
+    }
+    undo(board: number[][]): void {
+        board[this.fromY][this.fromX] = this.pieces[0];
+        board[this.y][this.x] = -1;
+    }
+
+}
+
+class PawnMove extends Move {
+
+    fromX: number;
+    fromY: number;
+    replacement: number;
+
+    constructor(piece: number, fromX: number, fromY: number, x: number, y: number) {
+        super([ piece ], x, y);
+        this.fromX = fromX;
+        this.fromY = fromY;
+        
+        if (piece < 10) this.replacement = 2;
+        else this.replacement = 12;
+    }
+
+    do(board: number[][]): void {
+        board[this.fromY][this.fromX] = -1;
+        board[this.y][this.x] = this.replacement;
+    }
+    undo(board: number[][]): void {
+        board[this.fromY][this.fromX] = this.pieces[0];
+        board[this.y][this.x] = -1;
+    }
+
 }
 
 export class Game {
