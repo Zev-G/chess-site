@@ -184,7 +184,7 @@ export function findMoves(piece: Piece, board: number[][]): Move[] {
             moves.push(new SimpleMove(type, x, y, x - 2, y - 1));
         }
     // Bishop movement
-    } else if (pieceType == 2) {
+    } else if (pieceType == 2 || pieceType == 4) {
         let xOffset = 1;
         let yOffset = 1;
         let i = 1;
@@ -210,12 +210,34 @@ export function findMoves(piece: Piece, board: number[][]): Move[] {
         xOffset = -1;
         yOffset = -1;
         bishopMoves();
+    } 
     // Rook movement
-    } else if (pieceType == 3) {
-
-    // Queen movement
-    } else if (pieceType == 4) {
-
+    if (pieceType == 3 || pieceType == 4) {
+        let xOffset = 0;
+        let yOffset = 1;
+        let i = 1;
+        const rookMoves = () => {
+            while (isValid(x + xOffset * i, y + yOffset * i) && (isEmpty(board, x + xOffset * i, y + yOffset * i) || isEnemy(board, team, x + xOffset * i, y + yOffset * i))) {
+                moves.push(new SimpleMove(type, x, y, x + xOffset * i, y + yOffset * i));
+                if (!isEmpty(board, x + xOffset * i, y + yOffset * i)) {
+                    break;
+                }
+                i++;
+            }
+        };
+        rookMoves();
+        i = 1;
+        xOffset = 0;
+        yOffset = -1;
+        rookMoves();
+        i = 1;
+        xOffset = 1;
+        yOffset = 0;
+        rookMoves();
+        i = 1;
+        xOffset = -1;
+        yOffset = 0;
+        rookMoves();
     // King movement
     } else if (pieceType == 5) {
 
