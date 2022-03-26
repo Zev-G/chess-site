@@ -185,7 +185,31 @@ export function findMoves(piece: Piece, board: number[][]): Move[] {
         }
     // Bishop movement
     } else if (pieceType == 2) {
-
+        let xOffset = 1;
+        let yOffset = 1;
+        let i = 1;
+        const bishopMoves = () => {
+            while (isValid(x + xOffset * i, y + yOffset * i) && (isEmpty(board, x + xOffset * i, y + yOffset * i) || isEnemy(board, team, x + xOffset * i, y + yOffset * i))) {
+                moves.push(new SimpleMove(type, x, y, x + xOffset * i, y + yOffset * i));
+                if (!isEmpty(board, x + xOffset * i, y + yOffset * i)) {
+                    break;
+                }
+                i++;
+            }
+        };
+        bishopMoves();
+        i = 1;
+        xOffset = 1;
+        yOffset = -1;
+        bishopMoves();
+        i = 1;
+        xOffset = -1;
+        yOffset = 1;
+        bishopMoves();
+        i = 1;
+        xOffset = -1;
+        yOffset = -1;
+        bishopMoves();
     // Rook movement
     } else if (pieceType == 3) {
 
