@@ -23,15 +23,28 @@
     }
 </script>
 
-<div class={"board-spot" + (light ? " light" : " dark") + (showMove ? " is-move" : "")} on:click={pressed}>
+<div class={"board-spot" + (light ? " light" : " dark") + (showMove ? " is-move" : "")} on:mousedown={pressed}>
     {#if value !== -1}
         <img src={imageMap[value]} alt="Chess piece">
+    {/if}
+    {#if showMove}
+        <div class="circle" style={`left: calc(${x} * 100% / 8 + (50% / 8 / 2)); top: calc(${y} * 100% / 8 + (50% / 8 / 2));`}>
+
+        </div>
     {/if}
 </div>
 
 <style>
     .move-marker {
         position: absolute;
+    }
+
+    .circle {
+        position: absolute;
+        width: calc(50% / 8);
+        height: calc(50% / 8);
+        border-radius: 50%;
+        background-color: rgba(100, 100, 100, 0.4);
     }
 
     .board-spot {
@@ -50,7 +63,7 @@
         width: 100%;
     }
 
-    .is-move {
+    /* .is-move {
         background-color: rgba(150, 0, 0, 0.2);
-    }
+    } */
 </style>

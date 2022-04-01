@@ -175,14 +175,12 @@ export function findMoves(piece: Piece, board: number[][]): Move[] {
     let moves: Move[] = findRawMoves(piece, board);
     const type = piece.type;
     const team = pieceTeam(type);
-    console.log(`Original Board: ${[... board]}`);
     moves = moves.filter(move => {
         move.do(board);
         const answer = isTeamInCheck(board, team);
         move.undo(board);
         return !answer;
     });
-    console.log(`New Board: ${board}`);
     return moves;
 }
 export function findRawMoves(piece: Piece, board: number[][]): Move[] {
@@ -393,6 +391,7 @@ class PawnMove extends Move {
     fromX: number;
     fromY: number;
     replacement: number;
+    initalValue: number;
 
     constructor(piece: number, fromX: number, fromY: number, x: number, y: number) {
         super([ piece ], x, y);
@@ -404,12 +403,13 @@ class PawnMove extends Move {
     }
 
     do(board: number[][]): void {
+        this.initalValue = board[this.y][this.x];
         board[this.fromY][this.fromX] = -1;
         board[this.y][this.x] = this.replacement;
     }
     undo(board: number[][]): void {
         board[this.fromY][this.fromX] = this.pieces[0];
-        board[this.y][this.x] = -1;
+        board[this.y][this.x] = this.initalValue;
     }
 
 }
