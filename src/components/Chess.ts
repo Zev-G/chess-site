@@ -128,10 +128,64 @@ export function isValid(x: number, y: number): boolean {
     return x >= 0 && x < 8 && y >= 0 && y < 8;
 }
 
-export function pawnHasNotMoved(pawn: number) {
+export function findPiecesOnTeam(board: number[][], team: boolean): Piece[] {
+    let pieces: Piece[] = [];
+    for (let y = 0, boardLen = board.length; y < boardLen; y++) {
+        for (let x = 0, colLen = board[y].length; x < colLen; x++) {
+            let piece = board[y][x];
+            if (piece != -1 && pieceTeam(piece) === team) {
+                pieces.push({
+                    type: piece,
+                    x, y
+                });
+            }
+        }
+    }
+    return pieces;
+}
+
+export function findKing(board, team): Piece {
+    for (let y = 0, boardLen = board.length; y < boardLen; y++) {
+        for (let x = 0, colLen = board[y].length; x < colLen; x++) {
+            let piece = board[y][x];
+            if (piece != -1 && pieceTeam(piece) === team && pieceKind(piece) === 5) {
+                return {
+                    type: piece,
+                    x, y
+                };
+            }
+        }
+    }
+    return null;
+}
+
+export function isTeamInCheck(board: number[][], team: boolean): boolean {
+    let enemyMoves: Move[] = findPiecesOnTeam(board, !team).map(piece => findRawMoves(piece, board)).reduce((a, b) => a.concat(b));
+    let king = findKing(board, team);
+    for (let move of enemyMoves) {
+        if (move.x == king.x && move.y == king.y) return true;
+    }
+    return false;
+}
+
+export function pawnHasNotMoved(pawn: number): boolean {
     return pawn == 0 || pawn == 10;
 }
 export function findMoves(piece: Piece, board: number[][]): Move[] {
+    let moves: Move[] = findRawMoves(piece, board);
+    const type = piece.type;
+    const team = pieceTeam(type);
+    console.log(`Original Board: ${[... board]}`);
+    moves = moves.filter(move => {
+        move.do(board);
+        const answer = isTeamInCheck(board, team);
+        move.undo(board);
+        return !answer;
+    });
+    console.log(`New Board: ${board}`);
+    return moves;
+}
+export function findRawMoves(piece: Piece, board: number[][]): Move[] {
     let { type, x, y } = piece;
     if (type == -1) return [];
     let pieceType: number = pieceKind(type);
@@ -298,7 +352,7 @@ class SimpleMove extends Move {
     }
 
     do(board: number[][]): void {
-        this.initalValue = board[this.x][this.y];
+        this.initalValue = board[this.y][this.x];
         board[this.fromY][this.fromX] = -1;
         board[this.y][this.x] = this.pieces[0];
     }
