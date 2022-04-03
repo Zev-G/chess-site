@@ -42,7 +42,7 @@
     .circle {
         position: absolute;
         width: calc(50% / 8);
-        height: calc(50% / 8);
+        padding-top: calc(50% / 8);
         border-radius: 50%;
         background-color: rgba(100, 100, 100, 0.4);
     }
