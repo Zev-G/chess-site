@@ -183,7 +183,7 @@ export function findMoves(piece: Piece, board: number[][]): Move[] {
     });
     return moves;
 }
-export function findRawMoves(piece: Piece, board: number[][]): Move[] {
+export function findRawMoves(piece: Piece, board: number[][], checkCastling: boolean = true): Move[] {
     let { type, x, y } = piece;
     if (type == -1) return [];
     let pieceType: number = pieceKind(type);
@@ -270,7 +270,11 @@ export function findRawMoves(piece: Piece, board: number[][]): Move[] {
         let i = 1;
         const rookMoves = () => {
             while (isValid(x + xOffset * i, y + yOffset * i) && (isEmpty(board, x + xOffset * i, y + yOffset * i) || isEnemy(board, team, x + xOffset * i, y + yOffset * i))) {
-                moves.push(new SimpleMove(type, x, y, x + xOffset * i, y + yOffset * i));
+                if (pieceType == 3) {
+                    moves.push(new UpdateType(type, (team ? 6 : 16), x, y, x + xOffset * i, y + yOffset * i));
+                } else /* IMPLIED: (pieceType == 4) */ {
+                    moves.push(new SimpleMove(type, x, y, x + xOffset * i, y + yOffset * i));
+                }
                 if (!isEmpty(board, x + xOffset * i, y + yOffset * i)) {
                     break;
                 }
@@ -292,30 +296,64 @@ export function findRawMoves(piece: Piece, board: number[][]): Move[] {
         rookMoves();
     // King movement
     } else if (pieceType == 5) {
-        // TODO stop king from moving into check.
+        // Normal movement
         if (isValid(x + 1, y + 1) && isEnemyOrEmpty(board, team, x + 1, y + 1)) {
-            moves.push(new SimpleMove(type, x, y, x + 1, y + 1));
+            moves.push(new UpdateType(type, (team ? 9 : 19), x, y, x + 1, y + 1));
         }
         if (isValid(x, y + 1) && isEnemyOrEmpty(board, team, x, y + 1)) {
-            moves.push(new SimpleMove(type, x, y, x, y + 1));
+            moves.push(new UpdateType(type, (team ? 9 : 19), x, y, x, y + 1));
         }
         if (isValid(x - 1, y + 1) && isEnemyOrEmpty(board, team, x - 1, y + 1)) {
-            moves.push(new SimpleMove(type, x, y, x - 1, y + 1));
+            moves.push(new UpdateType(type, (team ? 9 : 19), x, y, x - 1, y + 1));
         }
         if (isValid(x + 1, y) && isEnemyOrEmpty(board, team, x + 1, y)) {
-            moves.push(new SimpleMove(type, x, y, x + 1, y));
+            moves.push(new UpdateType(type, (team ? 9 : 19), x, y, x + 1, y));
         }
         if (isValid(x - 1, y) && isEnemyOrEmpty(board, team, x - 1, y)) {
-            moves.push(new SimpleMove(type, x, y, x - 1, y));
+            moves.push(new UpdateType(type, (team ? 9 : 19), x, y, x - 1, y));
         }
         if (isValid(x + 1, y - 1) && isEnemyOrEmpty(board, team, x + 1, y - 1)) {
-            moves.push(new SimpleMove(type, x, y, x + 1, y - 1));
+            moves.push(new UpdateType(type, (team ? 9 : 19), x, y, x + 1, y - 1));
         }
         if (isValid(x, y - 1) && isEnemyOrEmpty(board, team, x, y - 1)) {
-            moves.push(new SimpleMove(type, x, y, x, y - 1));
+            moves.push(new UpdateType(type, (team ? 9 : 19), x, y, x, y - 1));
         }
         if (isValid(x - 1, y - 1) && isEnemyOrEmpty(board, team, x - 1, y - 1)) {
-            moves.push(new SimpleMove(type, x, y, x - 1, y - 1));
+            moves.push(new UpdateType(type, (team ? 9 : 19), x, y, x - 1, y - 1));
+        }
+        // Castling
+        // Check if king hasn't moved
+        if (checkCastling && (type == 8 || type == 18)) {
+            const castleLeft = board[y][0] == (team ? 5 : 15) && board[y][1] == -1 && board[y][2] == -1 && board[y][3] == -1;
+            const castleRight = board[y][7] == (team ? 5 : 15) && board[y][5] == -1 && board[y][6] == -1;
+            if (castleLeft || castleRight) {
+                // Generate opponent moves
+                const oppMoves: Move[] = findPiecesOnTeam(board, !team)
+                    .map(piece => findRawMoves(piece, board, false))
+                    .reduce((a, b) => a.concat(b));
+                const spotIsSafe = (x: number, y: number): boolean => {
+                    for (let move of oppMoves) {
+                        if (move.x == x && move.y == y) return true;
+                    }
+                    return true;
+                }
+                if (spotIsSafe(x, y)) {
+                    if (castleLeft && spotIsSafe(3, y)) {
+                        moves.push(new CastleMove(piece, {
+                            type: (team) ? 5 : 15,
+                            x: 0,
+                            y
+                        }));
+                    }
+                    if (castleRight && spotIsSafe(5, y)) {
+                        moves.push(new CastleMove(piece, {
+                            type: (team) ? 5 : 15,
+                            x: 7,
+                            y
+                        }));
+                    }
+                }
+            }
         }
     }
 
@@ -335,6 +373,32 @@ export abstract class Move {
 
     abstract do(board: number[][]): void;
     abstract undo(board: number[][]): void;
+}
+
+class UpdateType extends Move {
+
+    fromX: number;
+    fromY: number;
+    initalValue: number;
+    replacement: number;
+
+    constructor(piece: number, replacenment: number, fromX: number, fromY: number, x: number, y: number) {
+        super([ piece ], x, y);
+        this.fromX = fromX;
+        this.fromY = fromY;
+        this.replacement = replacenment;
+    }
+
+    do(board: number[][]): void {
+        this.initalValue = board[this.y][this.x];
+        board[this.fromY][this.fromX] = -1;
+        board[this.y][this.x] = this.replacement;
+    }
+    undo(board: number[][]): void {
+        board[this.fromY][this.fromX] = this.pieces[0];
+        board[this.y][this.x] = this.initalValue;
+    }
+
 }
 
 class SimpleMove extends Move {
@@ -410,6 +474,44 @@ class PawnMove extends Move {
     undo(board: number[][]): void {
         board[this.fromY][this.fromX] = this.pieces[0];
         board[this.y][this.x] = this.initalValue;
+    }
+
+}
+
+class CastleMove extends Move {
+
+    replaceKing: number;
+    replaceRook: number;
+    rookFromX: number;
+    rookToX: number;
+    kingFromX: number;
+
+    constructor(king: Piece, rook: Piece) {
+        super([ king.type, rook.type ], (rook.x > king.x ? 6 : 2), king.y);
+        if (pieceTeam(king.type)) {
+            this.replaceKing = 9;
+            this.replaceRook = 6;
+        } else {
+            this.replaceKing = 19;
+            this.replaceRook = 16;
+        }
+        this.rookFromX = rook.x;
+        this.kingFromX = king.x;
+        this.rookToX = (rook.x > king.x) ? 5 : 3;
+    }
+
+    do(board: number[][]): void {
+        board[this.y][this.kingFromX] = -1;
+        board[this.y][this.rookFromX] = -1;
+        board[this.y][this.x] = this.replaceKing;
+        board[this.y][this.rookToX] = this.replaceRook;
+    }
+
+    undo(board: number[][]): void {
+        board[this.y][this.x] = -1;
+        board[this.y][this.rookToX] = -1;
+        board[this.y][this.kingFromX] = this.pieces[0];
+        board[this.y][this.rookFromX] = this.pieces[1];
     }
 
 }
