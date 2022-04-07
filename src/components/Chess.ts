@@ -168,6 +168,10 @@ export function isTeamInCheck(board: number[][], team: boolean): boolean {
     return false;
 }
 
+export function enemyMovedForwardTwo(piece: number, team: boolean) {
+    return piece == (team ? 11 : 1)
+}
+
 export function pawnHasNotMoved(pawn: number): boolean {
     return pawn == 0 || pawn == 10;
 }
@@ -197,7 +201,7 @@ export function findRawMoves(piece: Piece, board: number[][], checkCastling: boo
         if (isValid(x, y + displace) && isEmpty(board, x, y + displace)) {
             moves.push(new PawnMove(type, x, y, x, y + displace));
         }
-        // Take
+        // Basic taking
         if (isValid(x + 1, y + displace) && isEnemy(board, team, x + 1, y + displace)) {     
             moves.push(new PawnMove(type, x, y, x + 1, y + displace));
         }
@@ -208,8 +212,17 @@ export function findRawMoves(piece: Piece, board: number[][], checkCastling: boo
         if (isValid(x, y + displace * 2) && pawnHasNotMoved(type) && isEmpty(board, x, y + displace * 2) && isEmpty(board, x, y + displace)) {
             moves.push(new PawnMoveTwoForward(type, x, y, x, y + displace * 2));
         }
+
+        // En passant
+        if (isValid(x - 1, y) && isValid(x - 1, y + displace) && enemyMovedForwardTwo(board[y][x - 1], team)) {
+            moves.push(new EnPassantMove(team, -1, x, y, x - 1, y + displace));
+        }
+        if (isValid(x + 1, y) && isValid(x + 1, y + displace) && enemyMovedForwardTwo(board[y][x + 1], team)) {
+            moves.push(new EnPassantMove(team, 1, x, y, x + 1, y + displace));
+        }
+    }
     // Knight movement
-    } else if (pieceType == 1) {
+    else if (pieceType == 1) {
         if (isValid(x + 1, y + 2) && isEnemyOrEmpty(board, team, x + 1, y + 2)) {
             moves.push(new SimpleMove(type, x, y, x + 1, y + 2));
         }
@@ -235,8 +248,9 @@ export function findRawMoves(piece: Piece, board: number[][], checkCastling: boo
         if (isValid(x - 2, y - 1) && isEnemyOrEmpty(board, team, x - 2, y - 1)) {
             moves.push(new SimpleMove(type, x, y, x - 2, y - 1));
         }
+    }
     // Bishop movement
-    } else if (pieceType == 2 || pieceType == 4) {
+    else if (pieceType == 2 || pieceType == 4) {
         let xOffset = 1;
         let yOffset = 1;
         let i = 1;
@@ -262,7 +276,7 @@ export function findRawMoves(piece: Piece, board: number[][], checkCastling: boo
         xOffset = -1;
         yOffset = -1;
         bishopMoves();
-    } 
+    }
     // Rook movement
     if (pieceType == 3 || pieceType == 4) {
         let xOffset = 0;
@@ -294,8 +308,9 @@ export function findRawMoves(piece: Piece, board: number[][], checkCastling: boo
         xOffset = -1;
         yOffset = 0;
         rookMoves();
+    }
     // King movement
-    } else if (pieceType == 5) {
+    else if (pieceType == 5) {
         // Normal movement
         if (isValid(x + 1, y + 1) && isEnemyOrEmpty(board, team, x + 1, y + 1)) {
             moves.push(new UpdateType(type, (team ? 9 : 19), x, y, x + 1, y + 1));
@@ -512,6 +527,33 @@ class CastleMove extends Move {
         board[this.y][this.rookToX] = -1;
         board[this.y][this.kingFromX] = this.pieces[0];
         board[this.y][this.rookFromX] = this.pieces[1];
+    }
+
+}
+
+class EnPassantMove extends Move {
+    
+    takeX: number;
+    fromX: number;
+    fromY: number;
+
+    constructor(team: boolean, takeX: number, fromX: number, fromY: number, x: number, y: number) {
+        super((team ? [ 0, 11 ] : [ 10, 1]), x, y);
+        this.takeX = takeX;
+        this.fromX = fromX;
+        this.fromY = fromY;
+    }
+
+    do(board: number[][]): void {
+        board[this.fromY][this.fromX + this.takeX] = -1;
+        board[this.fromY][this.fromX] = -1;
+        board[this.y][this.x] = this.pieces[0];
+    }
+
+    undo(board: number[][]): void {
+        board[this.fromY][this.fromX + this.takeX] = this.pieces[1];
+        board[this.fromY][this.fromX] = this.pieces[0];
+        board[this.y][this.x] = -1;
     }
 
 }
