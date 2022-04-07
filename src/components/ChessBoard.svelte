@@ -3,6 +3,7 @@
     import { fade } from "svelte/transition";
     import BoardSpot from "./BoardSpot.svelte";
     import { onMount } from "svelte";
+    import GameSettings from "./GameSettings.svelte";
     let board = defaultBoard;
 
     let possibleMoves: Move[] = [];
@@ -61,6 +62,9 @@
             {/each}
         {/if}
     </div>
+    <div class="icon">
+        <!-- <GameSettings /> -->
+    </div>
 </div>
 
 <style>
@@ -75,14 +79,20 @@
         justify-content: center;
         align-items: center;
         height: 100vh;
+        --grid-size: calc(min(90vw, 90vh) / 8);
+    }
+
+    .icon {
+        display: flex;
+        height: calc(var(--grid-size) * 8);
+        align-items: flex-start;
     }
 
     .board {
         display: grid;
-        --grid-size: calc(min(90vw, 90vh) / 8);
         grid-template-columns: repeat(8, var(--grid-size));
         grid-template-rows: repeat(8, var(--grid-size));
         grid-auto-flow: row;
-        filter: drop-shadow(0 0 20px black)
+        filter: drop-shadow(0 0 10px black);
     }
 </style>
