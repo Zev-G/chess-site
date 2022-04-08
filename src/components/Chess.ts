@@ -199,14 +199,56 @@ export function findRawMoves(piece: Piece, board: number[][], checkCastling: boo
         // Move forward 1
         let displace = team ? -1 : 1;
         if (isValid(x, y + displace) && isEmpty(board, x, y + displace)) {
-            moves.push(new PawnMove(type, x, y, x, y + displace));
+            if (y == (team ? 1 : 6)) {
+                if (team) {
+                    moves.push(new PawnPromotion(type, 7, x, y, x, y + displace));
+                    moves.push(new PawnPromotion(type, 6, x, y, x, y + displace));
+                    moves.push(new PawnPromotion(type, 4, x, y, x, y + displace));
+                    moves.push(new PawnPromotion(type, 3, x, y, x, y + displace));
+                } else {
+                    moves.push(new PawnPromotion(type, 17, x, y, x, y + displace));
+                    moves.push(new PawnPromotion(type, 16, x, y, x, y + displace));
+                    moves.push(new PawnPromotion(type, 14, x, y, x, y + displace));
+                    moves.push(new PawnPromotion(type, 13, x, y, x, y + displace));
+                }
+            } else {
+                moves.push(new PawnMove(type, x, y, x, y + displace));
+            }
         }
         // Basic taking
-        if (isValid(x + 1, y + displace) && isEnemy(board, team, x + 1, y + displace)) {     
-            moves.push(new PawnMove(type, x, y, x + 1, y + displace));
+        if (isValid(x + 1, y + displace) && isEnemy(board, team, x + 1, y + displace)) {    
+            if (y == (team ? 1 : 6)) {
+                if (team) {
+                    moves.push(new PawnPromotion(type, 7, x, y, x + 1, y + displace));
+                    moves.push(new PawnPromotion(type, 6, x, y, x + 1, y + displace));
+                    moves.push(new PawnPromotion(type, 4, x, y, x + 1, y + displace));
+                    moves.push(new PawnPromotion(type, 3, x, y, x + 1, y + displace));
+                } else {
+                    moves.push(new PawnPromotion(type, 17, x, y, x + 1, y + displace));
+                    moves.push(new PawnPromotion(type, 16, x, y, x + 1, y + displace));
+                    moves.push(new PawnPromotion(type, 13, x, y, x + 1, y + displace));
+                    moves.push(new PawnPromotion(type, 14, x, y, x + 1, y + displace));
+                }
+            } else {
+                moves.push(new PawnMove(type, x, y, x + 1, y + displace));
+            }
         }
         if (isValid(x - 1, y + displace) && isEnemy(board, team, x - 1, y + displace)) {
-            moves.push(new PawnMove(type, x, y, x - 1, y + displace));
+            if (y == (team ? 1 : 6)) {
+                if (team) {
+                    moves.push(new PawnPromotion(type, 7, x, y, x - 1, y + displace));
+                    moves.push(new PawnPromotion(type, 6, x, y, x - 1, y + displace));
+                    moves.push(new PawnPromotion(type, 4, x, y, x - 1, y + displace));
+                    moves.push(new PawnPromotion(type, 3, x, y, x - 1, y + displace));
+                } else {
+                    moves.push(new PawnPromotion(type, 17, x, y, x - 1, y + displace));
+                    moves.push(new PawnPromotion(type, 16, x, y, x - 1, y + displace));
+                    moves.push(new PawnPromotion(type, 14, x, y, x - 1, y + displace));
+                    moves.push(new PawnPromotion(type, 13, x, y, x - 1, y + displace));
+                }
+            } else {
+                moves.push(new PawnMove(type, x, y, x - 1, y + displace));
+            }
         }
         // Move forawrd two:
         if (isValid(x, y + displace * 2) && pawnHasNotMoved(type) && isEmpty(board, x, y + displace * 2) && isEmpty(board, x, y + displace)) {
@@ -415,6 +457,11 @@ class UpdateType extends Move {
     }
 
 }
+
+export class PawnPromotion extends UpdateType {
+
+}
+
 
 class SimpleMove extends Move {
 
