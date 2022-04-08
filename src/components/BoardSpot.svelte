@@ -1,7 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte"; 
 
-    import { Game, imageMap } from "./Chess";
+    import { imageMap } from "./Chess";
 
     let eventDispatcher = createEventDispatcher();
 
@@ -44,7 +44,7 @@
         width: calc(30% / 8);
         padding-top: calc(30% / 8);
         border-radius: 50%;
-        background-color: rgba(100, 100, 100, 0.4);
+        background-color: rgba(0, 0, 0, 0.4);
     }
 
     .board-spot {
@@ -62,8 +62,4 @@
     img {
         width: 100%;
     }
-
-    /* .is-move {
-        background-color: rgba(150, 0, 0, 0.2);
-    } */
 </style>

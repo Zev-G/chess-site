@@ -604,11 +604,3 @@ class EnPassantMove extends Move {
     }
 
 }
-
-export class Game {
-    board: number[][];
-
-    constructor(board: number[][]) {
-        this.board = board;
-    }
-}

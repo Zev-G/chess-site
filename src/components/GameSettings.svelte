@@ -17,8 +17,13 @@
         cursor: pointer;
     }
 
-    .icon:hover, .icon.open {
+    .icon:hover {
         transform: rotate(45deg) scale(1.1);
+        color: rgb(236, 236, 236);
+    }
+
+    .icon.open {
+        transform: rotate(90deg) scale(1.2);
         color: white;
     }
 </style>

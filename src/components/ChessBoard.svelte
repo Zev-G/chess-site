@@ -1,10 +1,14 @@
 <script lang="ts">
-    import { defaultBoard, findMoves, Move } from "./Chess";
+    import { defaultBoard, findMoves, Move, pieceTeam } from "./Chess";
     import { fade } from "svelte/transition";
     import BoardSpot from "./BoardSpot.svelte";
     import { onMount } from "svelte";
     import GameSettings from "./GameSettings.svelte";
-    let board = defaultBoard;
+    import type Game from "./Game";
+
+    export let game: Game;
+
+    let board: number[][] = game.board;
 
     let possibleMoves: Move[] = [];
     let possibleMoveSpots: number[] = [];
@@ -29,6 +33,7 @@
                 board = [... board];
                 possibleMoves = [];
                 possibleMoveSpots = [];
+                game.turn = !game.turn;
                 return;
             }
         }
@@ -40,7 +45,7 @@
         if (piece == -1) {
             possibleMoves = [];
             possibleMoveSpots = [];
-        } else {
+        } else if (pieceTeam(piece) == game.turn) {
             possibleMoves = findMoves({
                 type: piece,
                 x, y
@@ -51,20 +56,20 @@
 </script>
 
 <div class="wrapper">
-    <div class="board">
-        {#if showing}
-            {#each board as row, y}
-                {#each row as piece, x}
-                    <div transition:fade={{delay: (y * 8 + x) * 35 + 350, duration: 300}}>
-                        <BoardSpot possibleMoves={possibleMoveSpots} on:movesRequested={movesRequested} board={board} value={piece} x={x} y={y}/>
-                    </div>
+    {#if showing}
+        <div class="board" transition:fade>
+                {#each board as row, y}
+                    {#each row as piece, x}
+                        <div>
+                            <BoardSpot possibleMoves={possibleMoveSpots} on:movesRequested={movesRequested} board={board} value={piece} x={x} y={y}/>
+                        </div>
+                    {/each}
                 {/each}
-            {/each}
-        {/if}
-    </div>
-    <div class="icon">
-        <!-- <GameSettings /> -->
-    </div>
+        </div>
+        <!-- <div class="icon" transition:fade>
+            <GameSettings />
+        </div> -->
+    {/if}
 </div>
 
 <style>
