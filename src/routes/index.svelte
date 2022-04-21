@@ -5,6 +5,7 @@
 
 <svelte:head>
     <title>Chess</title>
+    <link rel="stylesheet" href="/global.css"/>
 </svelte:head>
 
 <ChessBoard game={new Game()}/>

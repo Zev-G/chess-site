@@ -1,0 +1,15 @@
+button {
+    border-radius: 1em;
+    color: white;
+    border-color: transparent;
+    background-color: rgb(25, 24, 27);
+    cursor: pointer;
+    padding: 0.5em 1.5em;
+    font-family: monospace, 'Courier New', Courier;
+
+    transition: background-color 0.25s;
+}
+
+button:hover {
+    background-color: rgb(17, 17, 19);
+}

@@ -69,16 +69,18 @@ export const imageMap = [
 ]
 
 // Y then X indexing, i.e. defaultBoard[2][0] refers to board position y = 2, x = 0
-export const defaultBoard: number[][] = [
-    [15, 13, 14, 17, 18, 14, 13, 15],
-    [10, 10, 10, 10, 10, 10, 10, 10],
-    [-1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1],
-    [0,  0,  0,  0,  0,  0,  0,  0 ],
-    [5,  3,  4,  7,  8,  4,  3,  5 ]
-];
+export function defaultBoard(): number[][] {
+    return [
+        [15, 13, 14, 17, 18, 14, 13, 15],
+        [10, 10, 10, 10, 10, 10, 10, 10],
+        [-1, -1, -1, -1, -1, -1, -1, -1],
+        [-1, -1, -1, -1, -1, -1, -1, -1],
+        [-1, -1, -1, -1, -1, -1, -1, -1],
+        [-1, -1, -1, -1, -1, -1, -1, -1],
+        [0,  0,  0,  0,  0,  0,  0,  0 ],
+        [5,  3,  4,  7,  8,  4,  3,  5 ]
+    ];
+}
 
 type Piece = {
     type: number,
@@ -159,8 +161,15 @@ export function findKing(board, team): Piece {
     return null;
 }
 
+export function findRawMovesByTeam(board: number[][], team: boolean) {
+    return findPiecesOnTeam(board, team).map(piece => findRawMoves(piece, board)).reduce((a, b) => a.concat(b));
+}
+export function findMovesByTeam(board: number[][], team: boolean) {
+    return findPiecesOnTeam(board, team).map(piece => findMoves(piece, board)).reduce((a, b) => a.concat(b));
+}
+
 export function isTeamInCheck(board: number[][], team: boolean): boolean {
-    let enemyMoves: Move[] = findPiecesOnTeam(board, !team).map(piece => findRawMoves(piece, board)).reduce((a, b) => a.concat(b));
+    let enemyMoves: Move[] = findRawMovesByTeam(board, !team);
     let king = findKing(board, team);
     for (let move of enemyMoves) {
         if (move.x == king.x && move.y == king.y) return true;
