@@ -28,7 +28,7 @@
         <img src={imageMap[value]} alt="Chess piece">
     {/if}
     {#if showMove}
-        <div class="circle" style={`left: calc(${x} * 100% / 8 + (70% / 8 / 2)); top: calc(${y} * 100% / 8 + (70% / 8 / 2));`}>
+        <div class="circle" style={`--x: ${x}; --y: ${y};`}>
 
         </div>
     {/if}
@@ -41,10 +41,13 @@
 
     .circle {
         position: absolute;
-        width: calc(30% / 8);
-        padding-top: calc(30% / 8);
+        width: calc(var(--grid-size) / 3.5);
+        padding-top: calc(var(--grid-size) / 3.5);
         border-radius: 50%;
         background-color: rgba(0, 0, 0, 0.4);
+
+        left: calc(var(--x) * var(--grid-size) + (var(--grid-size) / 2 - (var(--grid-size) / 3.5 / 2)));
+        top: calc(var(--y) * var(--grid-size) + (var(--grid-size) / 2 - (var(--grid-size) / 3.5 / 2)));
     }
 
     .board-spot {
