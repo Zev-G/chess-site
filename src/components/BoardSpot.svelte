@@ -40,7 +40,7 @@
     }
 
     .circle {
-        position: absolute;
+        /* position: absolute; */
         width: calc(var(--grid-size) / 3.5);
         padding-top: calc(var(--grid-size) / 3.5);
         border-radius: 50%;
