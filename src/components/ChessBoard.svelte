@@ -39,12 +39,11 @@
     }
 
     function doMove(move: Move) {
-        move.do(board);
-        board = [... board];
+        game.doMove(move);
+        board = [...board];
         possibleMoves = [];
         possibleMoveSpots = [];
-        game.turn = !game.turn;
-        teamWon = game.checkWinState();
+        teamWon = game.winState;
     }
 
     function generateMoves(x: number, y: number): void {

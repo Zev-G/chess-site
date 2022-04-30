@@ -1,9 +1,9 @@
-import { findMovesByTeam, isTeamInCheck, type Move } from "./Chess";
+import { copyBoard, findMovesByTeam, isTeamInCheck, type Move } from "./Chess";
 
 let lastMove = null;
 
 export default function search(board: number[][], depth: number, team: boolean): Move {
-    board = [... board];
+    board = copyBoard(board);
     minimax(board, depth, Number.MIN_VALUE, Number.MAX_VALUE, team);
     return lastMove;
 }
