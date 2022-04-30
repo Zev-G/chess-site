@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { findMoves, Move, pieceTeam } from "./Chess";
+    import { findMoves, Move, PawnPromotion, pieceTeam, type Piece } from "./Chess";
     import { fade } from "svelte/transition";
     import BoardSpot from "./BoardSpot.svelte";
     import BoardPopup from "./BoardPopup.svelte";
@@ -16,16 +16,20 @@
     let possibleMoves: Move[] = [];
     let possibleMoveSpots: number[] = [];
 
+    let promotingPawn: PawnPromotion = null;
+
     let showing = false;
     onMount(() => showing = true);
 
     function movesRequested(event): void {
-        let x: number = event.detail.x as number;
-        let y: number = event.detail.y as number;
-        if (possibleMoveSpots.indexOf(y * 8 + x) != -1) {
-            move(x, y);
-        } else {
-            generateMoves(x, y);
+        if (promotingPawn == null) {
+            let x: number = event.detail.x as number;
+            let y: number = event.detail.y as number;
+            if (possibleMoveSpots.indexOf(y * 8 + x) != -1) {
+                move(x, y);
+            } else {
+                generateMoves(x, y);
+            }
         }
     }
 
@@ -39,11 +43,27 @@
     }
 
     function doMove(move: Move) {
+        if (move instanceof PawnPromotion && promotingPawn == null) {
+            promotingPawn = move;
+            return;
+        }
+        promotingPawn = null;
         game.doMove(move);
         board = [...board];
         possibleMoves = [];
         possibleMoveSpots = [];
         teamWon = game.winState;
+    }
+
+    function promote(to: number) {
+        let replacement: number;
+        if (to == 4) replacement = 7;
+        if (to == 3) replacement = 6;
+        if (to == 2) replacement = 4;
+        if (to == 1) replacement = 3;
+        if (!pieceTeam(promotingPawn.pieces[0])) replacement += 10;
+        promotingPawn.replacement = replacement;
+        doMove(promotingPawn);
     }
 
     function generateMoves(x: number, y: number): void {
@@ -70,7 +90,7 @@
 
 <div class="wrapper">
     {#if showing}
-        <div class={"board" + (teamWon !== null ? " grayed-out" : "")} transition:fade>
+        <div class={"board" + ((teamWon !== null || promotingPawn !== null) ? " grayed-out" : "")} transition:fade>
                 {#each board as row, y}
                     {#each row as piece, x}
                         <div>
@@ -79,6 +99,25 @@
                     {/each}
                 {/each}
         </div>
+        {#if promotingPawn !== null}
+            <BoardPopup>
+                <h1>Choose promotion</h1>
+                <div class="promotion-options">
+                    <button on:click={() => promote(4)}>
+                        <img alt="queen" src={`/${pieceTeam(promotingPawn.pieces[0]) ? "white" : "black"}/queen.png`}>
+                    </button>
+                    <button on:click={() => promote(3)}>
+                        <img alt="rook" src={`/${pieceTeam(promotingPawn.pieces[0]) ? "white" : "black"}/rook.png`}>
+                    </button>
+                    <button on:click={() => promote(2)}>
+                        <img alt="bishop" src={`/${pieceTeam(promotingPawn.pieces[0]) ? "white" : "black"}/bishop.png`}>
+                    </button>
+                    <button on:click={() => promote(1)}>
+                        <img alt="knight" src={`/${pieceTeam(promotingPawn.pieces[0]) ? "white" : "black"}/knight.png`}>
+                    </button>
+                </div>
+            </BoardPopup>
+        {/if}
         {#if teamWon !== null}
             <BoardPopup>
                 <div>
@@ -118,6 +157,13 @@
     }
     button {
         font-size: calc(var(--grid-size) * 0.175);
+    }
+    
+    .promotion-options > button > img {
+        width: calc(var(--grid-size) * 0.871);
+    }
+    .promotion-options {
+        margin: 1rem 0;
     }
 
     .grayed-out {

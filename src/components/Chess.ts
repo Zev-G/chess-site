@@ -95,7 +95,7 @@ export function copyBoard(board: number[][]): number[][] {
     ];
 }
 
-type Piece = {
+export type Piece = {
     type: number,
     x: number,
     y: number
