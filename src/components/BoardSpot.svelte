@@ -60,10 +60,10 @@
     }
 
     .light {
-        background-color: rgb(228, 209, 179);
+        background-color: hsl(60deg 45% 88%);
     }
     .dark {
-        background-color: rgb(71, 64, 51);
+        background-color: hsl(90deg 27% 46%);
     }
 
     img {

@@ -1,3 +1,8 @@
+* {
+    --monospace: monospace, 'Courier New', Courier;
+    --default-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 button {
     border-radius: 1em;
     color: white;
@@ -5,7 +10,7 @@ button {
     background-color: rgb(25, 24, 27);
     cursor: pointer;
     padding: 0.5em 1.5em;
-    font-family: monospace, 'Courier New', Courier;
+    font-family: var(--monospace);
 
     transition: background-color 0.25s;
 }

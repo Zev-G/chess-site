@@ -1,10 +1,10 @@
 <script>
     import { fly } from "svelte/transition";
-
+    import { outclick } from "./outclick";
     
 </script>
 
-<div transition:fly={{ y: -20, duration: 300 }}>
+<div transition:fly={{ y: -20, duration: 300 }} use:outclick on:outclick>
     <slot></slot>
 </div>
 

@@ -6,6 +6,7 @@
     import { onMount } from "svelte";
     import GameSettings from "./GameSettings.svelte";
     import Game from "./Game";
+    import GameSettingsToggle from "./GameSettingsToggle.svelte";
 
     export let game: Game;
     let teamWon: number = game.checkWinState();
@@ -17,6 +18,9 @@
     let possibleMoveSpots: number[] = [];
 
     let promotingPawn: PawnPromotion = null;
+    let showingSettings: boolean = false;
+
+    $: showingPopup = promotingPawn || showingSettings || teamWon;
 
     let showing = false;
     onMount(() => showing = true);
@@ -90,7 +94,7 @@
 
 <div class="wrapper">
     {#if showing}
-        <div class={"board" + ((teamWon !== null || promotingPawn !== null) ? " grayed-out" : "")} transition:fade>
+        <div class={"board" + (showingPopup ? " grayed-out" : "")} transition:fade>
                 {#each board as row, y}
                     {#each row as piece, x}
                         <div>
@@ -99,6 +103,14 @@
                     {/each}
                 {/each}
         </div>
+        <div class="icon" transition:fade>
+            <GameSettingsToggle bind:open={showingSettings}/>
+        </div>
+        {#if showingSettings}
+            <BoardPopup on:outclick={() => showingSettings = false}>
+                <GameSettings game={game} on:click={() => showingSettings = false}/>
+            </BoardPopup>
+        {/if}
         {#if promotingPawn !== null}
             <BoardPopup>
                 <h1>Choose promotion</h1>
@@ -135,9 +147,6 @@
                 </div>
             </BoardPopup>
         {/if}
-        <!-- <div class="icon" transition:fade>
-            <GameSettings />
-        </div> -->
     {/if}
 </div>
 
