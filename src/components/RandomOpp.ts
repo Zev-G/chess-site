@@ -7,7 +7,7 @@ export default class RandomOpp extends ComputerOpp {
     move(game: Game): Move {
         const moves = findMovesByTeam(game.board, game.turn);
         if (moves.length == 0) return null;
-        return moves[Math.floor((moves.length - 1) * Math.random())]
+        return moves[Math.round(Math.floor((moves.length - 1) * Math.random()))]
     }
 
 }

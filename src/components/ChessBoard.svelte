@@ -107,7 +107,8 @@ import RandomOpp from "./RandomOpp";
 
 <div class="wrapper">
     {#if showing}
-        <div class={"board" + (showingPopup ? " grayed-out" : "")} transition:fade>
+        <div class="inner-wrapper">
+            <div class={"board" + (showingPopup ? " grayed-out" : "")} transition:fade>
                 {#each board as row, y}
                     {#each row as piece, x}
                         <div>
@@ -115,51 +116,52 @@ import RandomOpp from "./RandomOpp";
                         </div>
                     {/each}
                 {/each}
+            </div>
+            {#if showingSettings}
+                <BoardPopup on:outclick={() => showingSettings = false}>
+                    <GameSettings bind:whiteController bind:blackController game={game} on:click={() => showingSettings = false}/>
+                </BoardPopup>
+            {/if}
+            {#if promotingPawn !== null}
+                <BoardPopup>
+                    <h1>Choose promotion</h1>
+                    <div class="promotion-options">
+                        <button on:click={() => promote(4)}>
+                            <img alt="queen" src={`/${pieceTeam(promotingPawn.pieces[0]) ? "white" : "black"}/queen.png`}>
+                        </button>
+                        <button on:click={() => promote(3)}>
+                            <img alt="rook" src={`/${pieceTeam(promotingPawn.pieces[0]) ? "white" : "black"}/rook.png`}>
+                        </button>
+                        <button on:click={() => promote(2)}>
+                            <img alt="bishop" src={`/${pieceTeam(promotingPawn.pieces[0]) ? "white" : "black"}/bishop.png`}>
+                        </button>
+                        <button on:click={() => promote(1)}>
+                            <img alt="knight" src={`/${pieceTeam(promotingPawn.pieces[0]) ? "white" : "black"}/knight.png`}>
+                        </button>
+                    </div>
+                </BoardPopup>
+            {/if}
+            {#if teamWon !== null}
+                <BoardPopup>
+                    <div>
+                        {#if teamWon == 0}
+                            <img alt="tie" src="/tie.png">
+                        {:else if teamWon == 1}
+                            <img alt="white won" src="/white/king.png">
+                        {:else if teamWon == -1}
+                            <img alt="black won" src="/black/king.png">
+                        {/if}
+                    </div>
+                    <h1>{winText}</h1>
+                    <div>
+                        <button on:click={restartGame}>Play again</button>
+                    </div>
+                </BoardPopup>
+            {/if}
         </div>
         <div class="icon" transition:fade>
             <GameSettingsToggle bind:open={showingSettings}/>
         </div>
-        {#if showingSettings}
-            <BoardPopup on:outclick={() => showingSettings = false}>
-                <GameSettings bind:whiteController bind:blackController game={game} on:click={() => showingSettings = false}/>
-            </BoardPopup>
-        {/if}
-        {#if promotingPawn !== null}
-            <BoardPopup>
-                <h1>Choose promotion</h1>
-                <div class="promotion-options">
-                    <button on:click={() => promote(4)}>
-                        <img alt="queen" src={`/${pieceTeam(promotingPawn.pieces[0]) ? "white" : "black"}/queen.png`}>
-                    </button>
-                    <button on:click={() => promote(3)}>
-                        <img alt="rook" src={`/${pieceTeam(promotingPawn.pieces[0]) ? "white" : "black"}/rook.png`}>
-                    </button>
-                    <button on:click={() => promote(2)}>
-                        <img alt="bishop" src={`/${pieceTeam(promotingPawn.pieces[0]) ? "white" : "black"}/bishop.png`}>
-                    </button>
-                    <button on:click={() => promote(1)}>
-                        <img alt="knight" src={`/${pieceTeam(promotingPawn.pieces[0]) ? "white" : "black"}/knight.png`}>
-                    </button>
-                </div>
-            </BoardPopup>
-        {/if}
-        {#if teamWon !== null}
-            <BoardPopup>
-                <div>
-                    {#if teamWon == 0}
-                        <img alt="tie" src="/tie.png">
-                    {:else if teamWon == 1}
-                        <img alt="white won" src="/white/king.png">
-                    {:else if teamWon == -1}
-                        <img alt="black won" src="/black/king.png">
-                    {/if}
-                </div>
-                <h1>{winText}</h1>
-                <div>
-                    <button on:click={restartGame}>Play again</button>
-                </div>
-            </BoardPopup>
-        {/if}
     {/if}
 </div>
 
@@ -193,11 +195,14 @@ import RandomOpp from "./RandomOpp";
     }
 
     .wrapper {
+        height: 100vh;
+        --grid-size: calc(min(90vw, 90vh) / 8);
+    }
+
+    .wrapper, .inner-wrapper {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
-        --grid-size: calc(min(90vw, 90vh) / 8);
     }
 
     .icon {
