@@ -1,4 +1,7 @@
 import { copyBoard, defaultBoard, findMovesByTeam, isTeamInCheck, Move, pieceKind } from "./Chess";
+import type ComputerOpp from "./ComputerOpp";
+import type Opponent from "./Opponent";
+import { Player } from "./Opponent";
 
 export default class Game {
     turn: boolean = true;
@@ -7,16 +10,52 @@ export default class Game {
     winState: number = null;
     movesSinceProgession: number = 0;
 
-    doMove(move: Move) {
+    _blackController: Opponent = new Player();
+    _whiteController: Opponent = new Player();
+    set blackController(player: Opponent) {
+        this._blackController = player;
+        if (!this.turn && !player.isPlayer()) {
+            this.doMove((this._blackController as ComputerOpp).move(this));
+        }
+    }
+    set whiteController(player: Opponent) {
+        console.log("set");
+        
+        this._whiteController = player;
+        if (this.turn && !player.isPlayer()) {
+            this.doMove((this._whiteController as ComputerOpp).move(this));
+        }
+    }
+    get blackController() { return this._blackController; }
+    get whiteController() { return this._whiteController; }
+
+    aiDelayAfter: number = 300;
+    aiDelayBefore: number = 100;
+
+    onMove: () => void = () => {};
+
+    async doMove(move: Move) {        
         if (pieceKind(move.pieces[0]) != 0 && this.board[move.y][move.x] == -1) {
-            this.movesSinceProgession++;            
+            this.movesSinceProgession++;
         } else {
             this.movesSinceProgession = 0;
+        }
+        if (!this.controller(this.turn).isPlayer()) {
+            await new Promise(r => setTimeout(r, this.aiDelayBefore));
         }
         move.do(this.board);
         this.positions.push(copyBoard(this.board));
         this.turn = !this.turn;
         this.winState = this.checkWinState();
+        this.onMove();
+        if (!this.controller(!this.turn).isPlayer()) {
+            await new Promise(r => setTimeout(r, this.aiDelayAfter));
+        }
+
+        if (this.winState == null && !this.controller(this.turn).isPlayer()) {
+            let controller = this.controller(this.turn) as ComputerOpp;
+            this.doMove(controller.move(this));
+        }
     }
 
     /*
@@ -56,6 +95,10 @@ export default class Game {
             }
         }
         return -1;
+    }
+
+    controller(team: boolean) {
+        return team ? this.whiteController : this.blackController;
     }
 
 }

@@ -7,10 +7,10 @@
     let showingWhiteDropdown = false;
     let showingBlackDropdown = false;
 
-    let whiteController = "player";
-    let blackController = "player";
+    export let whiteController = "player";
+    export let blackController = "player";
     const controllers = [
-        "player"
+        "player", "random"
     ];
     
 </script>

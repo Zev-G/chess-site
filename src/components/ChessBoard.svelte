@@ -7,6 +7,8 @@
     import GameSettings from "./GameSettings.svelte";
     import Game from "./Game";
     import GameSettingsToggle from "./GameSettingsToggle.svelte";
+import { Player } from "./Opponent";
+import RandomOpp from "./RandomOpp";
 
     export let game: Game;
     let teamWon: number = game.checkWinState();
@@ -19,6 +21,19 @@
 
     let promotingPawn: PawnPromotion = null;
     let showingSettings: boolean = false;
+
+    let whiteController = "player";
+    let blackController = "player";
+
+    $: game.onMove = () => {
+        board = [...board];
+        possibleMoves = [];
+        possibleMoveSpots = [];
+        teamWon = game.winState;
+    }
+
+    $: game.blackController = blackController === "player" ? new Player() : new RandomOpp();
+    $: game.whiteController = whiteController === "player" ? new Player() : new RandomOpp();
 
     $: showingPopup = promotingPawn || showingSettings || teamWon;
 
@@ -53,10 +68,6 @@
         }
         promotingPawn = null;
         game.doMove(move);
-        board = [...board];
-        possibleMoves = [];
-        possibleMoveSpots = [];
-        teamWon = game.winState;
     }
 
     function promote(to: number) {
@@ -76,7 +87,7 @@
         if (piece == -1) {
             possibleMoves = [];
             possibleMoveSpots = [];
-        } else if (pieceTeam(piece) == game.turn) {
+        } else if (pieceTeam(piece) == game.turn && game.controller(pieceTeam(piece)) instanceof Player) {
             possibleMoves = findMoves({
                 type: piece,
                 x, y
@@ -87,6 +98,8 @@
 
     function restartGame(): void {
         game = new Game();
+        game.blackController = blackController === "player" ? new Player() : new RandomOpp();
+        game.whiteController = whiteController === "player" ? new Player() : new RandomOpp();
         board = game.board;
         teamWon = game.checkWinState();
     }
@@ -108,7 +121,7 @@
         </div>
         {#if showingSettings}
             <BoardPopup on:outclick={() => showingSettings = false}>
-                <GameSettings game={game} on:click={() => showingSettings = false}/>
+                <GameSettings bind:whiteController bind:blackController game={game} on:click={() => showingSettings = false}/>
             </BoardPopup>
         {/if}
         {#if promotingPawn !== null}
