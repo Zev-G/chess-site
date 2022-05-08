@@ -42,7 +42,7 @@
         super_easy: function() { return new SuperEasy() },
         easy: function() { return new Easy() },
         medium: function() { return new Medium() },
-        hard: function() { return new Tough() }
+        tough: function() { return new Tough() }
     }
 
     $: game.blackController = controllerTransform[blackController]();
