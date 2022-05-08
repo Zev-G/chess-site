@@ -7,8 +7,9 @@
     import GameSettings from "./GameSettings.svelte";
     import Game from "./Game";
     import GameSettingsToggle from "./GameSettingsToggle.svelte";
-import { Player } from "./Opponent";
-import RandomOpp from "./RandomOpp";
+    import { Player } from "./Opponent";
+    import RandomOpp from "./RandomOpp";
+    import { SuperEasy, Easy, Medium, Tough } from "./Minimax";
 
     export let game: Game;
     let teamWon: number = game.checkWinState();
@@ -32,8 +33,17 @@ import RandomOpp from "./RandomOpp";
         teamWon = game.winState;
     }
 
-    $: game.blackController = blackController === "player" ? new Player() : new RandomOpp();
-    $: game.whiteController = whiteController === "player" ? new Player() : new RandomOpp();
+    const controllerTransform = {
+        player: function() { return new Player() },
+        random: function() { return new RandomOpp() },
+        super_easy: function() { return new SuperEasy() },
+        easy: function() { return new Easy() },
+        medium: function() { return new Medium() },
+        hard: function() { return new Tough() }
+    }
+
+    $: game.blackController = controllerTransform[blackController]();
+    $: game.whiteController = controllerTransform[whiteController]();
 
     $: showingPopup = promotingPawn || showingSettings || teamWon;
 
@@ -98,8 +108,8 @@ import RandomOpp from "./RandomOpp";
 
     function restartGame(): void {
         game = new Game();
-        game.blackController = blackController === "player" ? new Player() : new RandomOpp();
-        game.whiteController = whiteController === "player" ? new Player() : new RandomOpp();
+        game.blackController = controllerTransform[blackController]();
+        game.whiteController = controllerTransform[whiteController]();
         board = game.board;
         teamWon = game.checkWinState();
     }

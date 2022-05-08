@@ -10,7 +10,7 @@
     export let whiteController = "player";
     export let blackController = "player";
     const controllers = [
-        "player", "random"
+        "player", "random", "easy", "medium", "tough"
     ];
     
 </script>

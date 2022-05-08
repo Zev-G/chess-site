@@ -1,84 +1,129 @@
-import { copyBoard, findMovesByTeam, isTeamInCheck, type Move } from "./Chess";
+import { findMovesByTeam, findRawMovesByTeam, isTeamInCheck, type Move } from "./Chess";
+import ComputerOpp from "./ComputerOpp";
+import type Game from "./Game";
 
-let lastMove = null;
-
-export default function search(board: number[][], depth: number, team: boolean): Move {
-    board = copyBoard(board);
-    minimax(board, depth, Number.MIN_VALUE, Number.MAX_VALUE, team);
-    return lastMove;
+export class Tough extends ComputerOpp {
+    move(game: Game): Move {
+        return new Search(game.board, 4).start(game.turn);
+    }
 }
 
-function minimax(board: number[][], depth: number, alpha: number, beta: number, team: boolean): number {
-    if (depth == 0) return evalPos(board);
-
-    const allMoves = findMovesByTeam(board, team);
-    if (allMoves.length == 0) return evalPos(board);
-    if (team) {
-        let value = Number.MIN_VALUE;
-        for (let move of allMoves) {
-            move.do(board);
-            const moveVal = minimax(board, depth - 1, alpha, beta, false);
-            value = Math.max(value, moveVal);
-            move.undo(board);
-            alpha = Math.max(alpha, value);
-            if (value >= beta) {
-                break;
-            }
-        }
+export class Medium extends ComputerOpp {
+    move(game: Game): Move {
+        return new Search(game.board, 3).start(game.turn);
     }
+}
+
+export class Easy extends ComputerOpp {
+    move(game: Game): Move {
+        return new Search(game.board, 2).start(game.turn);
+    }
+}
+
+export class SuperEasy extends ComputerOpp {
+    move(game: Game): Move {
+        return new Search(game.board, 1).start(game.turn);
+    }
+}
+
+class Search {
+
+    bestMove: Move;
+    searchDepth: number;
     
-    let value = team ? Number.MIN_VALUE : Number.MAX_VALUE;
+    board: number[][];
+    searches: number = 0;
+    
+    constructor(board: number[][], searchDepth: number) {
+        this.board = board;
+        this.searchDepth = searchDepth;
+    }
 
-    let bestMove = null;
-    for (let move of allMoves) {
-        move.do(board);
-        const moveVal = minimax(board, depth - 1, alpha, beta, !team);
-        if (moveVal > value) {
-            if (team) {
-                value = moveVal;
-                bestMove = move;
-            }
-        } else if (!team) {
-            value = moveVal;
-            bestMove = move;
+    start(team: boolean): Move {
+        this.bestMove = null;
+        this.search(this.searchDepth, -Number.MAX_VALUE, Number.MAX_VALUE, team);
+        return this.bestMove;
+    }
+
+    search(depth: number, alpha: number, beta: number, team: boolean) {
+        this.searches++;
+        if (depth == 0) {
+            return this.evaluate(team);
         }
-        move.undo(board);
 
+        const moves = findMovesByTeam(this.board, team);
+        if (moves.length == 0) {
+            if (isTeamInCheck(this.board, team)) {
+                return -Number.MAX_VALUE;
+            }
+            return 0;
+        }
+
+        let bestEvaluation: number = -Number.MAX_VALUE;
+
+        for (let move of moves) {
+            move.do(this.board);
+            const evaluation: number = -this.search(depth - 1, -beta, -alpha, !team);
+            if (evaluation > bestEvaluation) {
+                bestEvaluation = evaluation;
+                if (depth == this.searchDepth) {
+                    this.bestMove = move;
+                }
+            }
+            bestEvaluation = Math.max(evaluation, bestEvaluation);
+            move.undo(this.board);
+            if (evaluation >= beta) {
+                return beta;
+            }
+            alpha = Math.max(alpha, bestEvaluation);
+        }
+
+        return alpha;
+    }
+
+    evaluate(team: boolean): number {
+        let total = 0;
+        const moves = findRawMovesByTeam(this.board, team);
+        const oppMoves = findRawMovesByTeam(this.board, !team);
+        total += Math.min(moves.length, 75);
+        total -= Math.min(oppMoves.length, 75);
+        for (let col of this.board) {
+            for (let piece of col) {
+                if (piece !== -1) {
+                    if (piece == 0 || piece == 1 || piece == 2) {
+                        total += 100;
+                    }
+                    if (piece == 3 || piece == 4) {
+                        total += 300;
+                    }
+                    if (piece == 5 || piece == 6) {
+                        total += 500;
+                    }
+                    if (piece == 7) {
+                        total += 900;
+                    }
+
+                    if (piece == 10 || piece == 11 || piece == 12) {
+                        total -= 100;
+                    }
+                    if (piece == 13 || piece == 14) {
+                        total -= 300;
+                    }
+                    if (piece == 15 || piece == 16) {
+                        total -= 500;
+                    }
+                    if (piece == 17) {
+                        total -= 900;
+                    }
+                }
+            }
+        }
+        
         if (team) {
-            if (value >= beta) {
-                break;
-            }
-            alpha = Math.max(alpha, value);
+            return total;
         } else {
-            if (value <= alpha) {
-                break;
-            }
-            beta = Math.min(beta, value);
+            return -total;
         }
     }
 
-    lastMove = bestMove;
-    return value;
-}
-
-function evalPos(board: number[][]): number {
-    if (isTeamInCheck(board, true)) return Number.MAX_VALUE;
-    if (isTeamInCheck(board, false)) return Number.MIN_VALUE;
-    let total = 0;
-    for (let col of board) {
-        for (let piece of col) {
-            if (piece !== -1) {
-                if (piece == 0 || piece == 1 || piece == 2) total += 1;
-                if (piece == 3 || piece == 4) total += 3;
-                if (piece == 5 || piece == 6) total += 5;
-                if (piece == 7) total += 9;
-
-                if (piece == 10 || piece == 11 || piece == 12) total -= 1;
-                if (piece == 13 || piece == 14) total -= 3;
-                if (piece == 15 || piece == 16) total -= 5;
-                if (piece == 17) total -= 9;
-            }
-        }
-    }
-    return total;
 }

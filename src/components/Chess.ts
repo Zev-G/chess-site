@@ -607,7 +607,7 @@ class EnPassantMove extends Move {
     fromY: number;
 
     constructor(team: boolean, takeX: number, fromX: number, fromY: number, x: number, y: number) {
-        super((team ? [ 0, 11 ] : [ 10, 1]), x, y);
+        super((team ? [ 2, 11 ] : [ 12, 1]), x, y);
         this.takeX = takeX;
         this.fromX = fromX;
         this.fromY = fromY;
