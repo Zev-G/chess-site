@@ -53,13 +53,15 @@
 <style>
     div {
         display: grid;
-        column-gap: calc(var(--grid-size) * 0.25);
-        grid-template-columns: repeat(2, 50%);
+        column-gap: calc(var(--grid-size) * 0.3);
+        row-gap: calc(var(--grid-size) * 0.1);
+        grid-template-columns: repeat(2, 1fr);
         margin-bottom: calc(var(--grid-size) * 0.1);
+        align-items: center;
     }
 
     button {
-        font-size: calc(var(--grid-size) * 0.17);
+        font-size: max(calc(var(--grid-size) * 0.17), 12px);
     }
 
     span, li > button {
@@ -72,11 +74,12 @@
     }
 
     span {
-        font-size: 1.2em;
+        font-size: max(calc(var(--grid-size) * 0.17), 12px);
     }
 
     .player-controller {
-        font-size: 1em;
+        font-size: max(calc(var(--grid-size) * 0.4), 16px);
+        text-align: right;
     }
 
     ul {
