@@ -1,14 +1,10 @@
 <script lang="ts">
-    import ChessBoard from "../components/ChessBoard.svelte";
+    import GameView from "../components/GameView.svelte";
     import Game from "../components/Game";
+
 </script>
 
-<svelte:head>
-    <title>Chess</title>
-    <link rel="stylesheet" href="/global.css"/>
-</svelte:head>
-
-<ChessBoard game={new Game()}/>
+<GameView game={new Game()}/>
 
 <style>
     

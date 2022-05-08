@@ -10,6 +10,7 @@
     import { Player } from "./Opponent";
     import RandomOpp from "./RandomOpp";
     import { SuperEasy, Easy, Medium, Tough } from "./Minimax";
+    import BoardDataGate from "./BoardDataGate";
 
     export let game: Game;
     let teamWon: number = game.checkWinState();
@@ -25,6 +26,8 @@
 
     let whiteController = "player";
     let blackController = "player";
+
+    let dataGate = new BoardDataGate();
 
     $: game.onMove = () => {
         board = [...board];
@@ -122,7 +125,7 @@
                 {#each board as row, y}
                     {#each row as piece, x}
                         <div>
-                            <BoardSpot possibleMoves={possibleMoveSpots} on:movesRequested={movesRequested} board={board} value={piece} x={x} y={y}/>
+                            <BoardSpot dataGate={dataGate} possibleMoves={possibleMoveSpots} on:movesRequested={movesRequested} on:dragDropped={movesRequested} value={piece} x={x} y={y}/>
                         </div>
                     {/each}
                 {/each}
@@ -176,11 +179,6 @@
 </div>
 
 <style>
-    :global(html, body) {
-        margin: 0;
-        padding: 0;
-        background-color: rgb(29, 31, 36);
-    }
 
     h1 {
         margin-top: 0;

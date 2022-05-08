@@ -402,7 +402,7 @@ export function findRawMoves(piece: Piece, board: number[][], checkCastling: boo
         }
         // Castling
         // Check if king hasn't moved
-        if (checkCastling && (type == 8 || type == 18)) {
+        if (checkCastling && (type == 8 || type == 18) && board[0].length == 8) {
             const castleLeft = board[y][0] == (team ? 5 : 15) && board[y][1] == -1 && board[y][2] == -1 && board[y][3] == -1;
             const castleRight = board[y][7] == (team ? 5 : 15) && board[y][5] == -1 && board[y][6] == -1;
             if (castleLeft || castleRight) {
