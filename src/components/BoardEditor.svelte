@@ -1,5 +1,5 @@
 <script lang=ts>
-    import { defaultBoard, imageMap } from "./Chess";
+    import { defaultBoard, imageMap, pieceKind } from "./Chess";
     import { outclick } from "./outclick";
     import BoardSpot from "./BoardSpot.svelte";
     import BoardDataGate from "./BoardDataGate";
@@ -9,9 +9,11 @@
     let piecesPopupX: number;
     let piecesPopupY: number;
     let dataGate = new BoardDataGate();
-    dataGate.onEmptyDragDropped = (x: number, y: number)  => {
-        board[y][x] = -1;
-        board = [...board];
+    dataGate.onEmptyDragDropped = (x: number, y: number) => {
+        if (pieceKind(board[y][x]) != 5) {
+            board[y][x] = -1;
+            board = [...board];
+        }
     }
 
     let dragging = -1;
@@ -32,10 +34,13 @@
     }
 
     function dragDropped(event) {
-        let piece = board[event.detail.fromY][event.detail.fromX];
-        board[event.detail.fromY][event.detail.fromX] = -1;
-        board[event.detail.y][event.detail.x] = piece;
-        board = [...board];
+        if (pieceKind(board[event.detail.y][event.detail.x]) != 5) {
+            let piece = board[event.detail.fromY][event.detail.fromX];
+            board[event.detail.fromY][event.detail.fromX] = -1;
+            board[event.detail.y][event.detail.x] = piece;
+            board = [...board];
+        }
+        
     }
 </script>
 
