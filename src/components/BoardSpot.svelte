@@ -14,14 +14,16 @@ import { dataset_dev, element } from "svelte/internal";
     export let x: number;
     export let y: number;
     export let possibleMoves: number[] = [];
+    export let size = 8;
 
     let elem: HTMLDivElement;
 
     onMount(() => {
         dataGate.spots.push({
             overlaps: function(x: number, y: number) {
+                if (elem == null) return false;
                 let rect = elem.getBoundingClientRect();
-                return x >= rect.x && x <= rect.x + rect.width && y >= rect.y && y <= rect.y + rect.height;
+                return rect && x >= rect.x && x <= rect.x + rect.width && y >= rect.y && y <= rect.y + rect.height;
             },
             hovered: function() {
 
@@ -37,7 +39,7 @@ import { dataset_dev, element } from "svelte/internal";
         });
     });
 
-    let flatValue = y * 8 + x;
+    $: flatValue = y * size + x;
     let dragging = false;
     let translateStyle = "";
 

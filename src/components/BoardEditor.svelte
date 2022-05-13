@@ -1,16 +1,59 @@
 <script lang=ts>
-    import { defaultBoard, imageMap, pieceKind } from "./Chess";
+    import { copyBoard, defaultBoard, imageMap, pieceKind } from "./Chess";
     import { outclick } from "./outclick";
     import BoardSpot from "./BoardSpot.svelte";
     import BoardDataGate from "./BoardDataGate";
 
     export let board: number[][] = defaultBoard();
+    const boardsBySize = {
+        "3": [
+            [-1, 18, -1],
+            [-1, -1, -1],
+            [-1, 8, -1]
+        ],
+        "4": [
+            [-1, 18, -1, -1],
+            [-1, -1, -1, -1],
+            [-1, -1, -1, -1],
+            [-1, -1, 8, -1]
+        ],
+        "5": [
+            [15, 14, 18, 14, 15],
+            [10, 10, 10, 10, 10],
+            [-1, -1, -1, -1, -1],
+            [0,  0,  0,  0,  0],
+            [5,  4,  8,  4,  5]
+        ],
+        "6": [
+            [15, 14, 17, 18, 14, 15],
+            [10, 10, 10, 10, 10, 10],
+            [-1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1],
+            [0,  0,  0,  0,  0,  0],
+            [5,  4,  7,  8,  4,  5]
+        ],
+        "7": [
+            [15, 13, 14, 18, 14, 13, 15],
+            [10, 10, 10, 10, 10, 10, 10],
+            [-1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1],
+            [0,  0,  0,  0,  0,  0,  0],
+            [5,  3,  4,  8,  4,  3,  5]
+        ],
+        "8": defaultBoard()
+    };
+
+    let size = 7;
+    let allowKingDeletion = false;
+
+    $: board = boardsBySize[`${size}`];
 
     let piecesPopupX: number;
     let piecesPopupY: number;
     let dataGate = new BoardDataGate();
     dataGate.onEmptyDragDropped = (x: number, y: number) => {
-        if (pieceKind(board[y][x]) != 5) {
+        if (allowKingDeletion || pieceKind(board[y][x]) != 5) {
             board[y][x] = -1;
             board = [...board];
         }
@@ -34,7 +77,7 @@
     }
 
     function dragDropped(event) {
-        if (pieceKind(board[event.detail.y][event.detail.x]) != 5) {
+        if (allowKingDeletion || pieceKind(board[event.detail.y][event.detail.x]) != 5) {
             let piece = board[event.detail.fromY][event.detail.fromX];
             board[event.detail.fromY][event.detail.fromX] = -1;
             board[event.detail.y][event.detail.x] = piece;
@@ -44,12 +87,12 @@
     }
 </script>
 
-<div class="wrapper">
+<div class="wrapper" style={`--board-size: ${size};`}>
     <div class="board">
         {#each board as row, y}
             {#each row as piece, x}
                 <div>
-                    <BoardSpot dataGate={dataGate} on:pieceRequested={(e) => showPieceOptions(e.detail.x, e.detail.y)} bind:editable value={piece} x={x} y={y} on:dragDropped={dragDropped}/>
+                    <BoardSpot bind:size={size} dataGate={dataGate} on:pieceRequested={(e) => showPieceOptions(e.detail.x, e.detail.y)} bind:editable value={piece} x={x} y={y} on:dragDropped={dragDropped}/>
                 </div>
             {/each}
         {/each}
@@ -91,11 +134,10 @@
                 </div>
             </div>
         {/if}
-        {#if dragging !== -1}
-            <div class="dragging">
-                <img src={imageMap[dragging]} alt="dragging piece">
-            </div>
-        {/if}
+    </div>
+    <div>
+        <input type="range" min=3 max=8 bind:value={size}>
+        <input type="checkbox" bind:checked={allowKingDeletion} name="Delete kings" id="">
     </div>
 </div>
 
@@ -118,7 +160,7 @@
 
     .wrapper {
         height: 100vh;
-        --grid-size: calc(min(90vw, 90vh) / 8);
+        --grid-size: calc(min(90vw, 90vh) / var(--board-size));
         display: flex;
         justify-content: center;
         align-items: center;
@@ -135,8 +177,8 @@
     
     .board {
         display: grid;
-        grid-template-columns: repeat(8, var(--grid-size));
-        grid-template-rows: repeat(8, var(--grid-size));
+        grid-template-columns: repeat(var(--board-size), var(--grid-size));
+        grid-template-rows: repeat(var(--board-size), var(--grid-size));
         grid-auto-flow: row;
         filter: drop-shadow(0 0 10px black);
         transition: opacity 0.5s;
