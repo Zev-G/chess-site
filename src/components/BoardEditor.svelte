@@ -41,7 +41,30 @@
             [0,  0,  0,  0,  0,  0,  0],
             [5,  3,  4,  8,  4,  3,  5]
         ],
-        "8": defaultBoard()
+        "8": defaultBoard(),
+        "9": [
+            [15,13,14,17,18,17,14,13,15],
+            [10,10,10,10,10,10,10,10,10],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [0,0,0,0,0,0,0,0,2],
+            [5,3,4,7,8,7,4,3,5],
+        ],
+        "10": [
+            [15,13,14,13,17,18,13,14,13,15],
+            [10,10,10,10,10,10,10,10,12,12],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [0,0,0,0,0,0,0,0,2,2],
+            [5,3,4,3,7,8,3,4,3,5],
+        ]
     };
 
     let size = 7;
@@ -135,9 +158,22 @@
             </div>
         {/if}
     </div>
-    <div>
-        <input type="range" min=3 max=8 bind:value={size}>
+    <div class="settings">
+        Board Size:
+        <input type="range" min=3 max=10 bind:value={size}>
+        Delete Kings:
         <input type="checkbox" bind:checked={allowKingDeletion} name="Delete kings" id="">
+        Print Board:
+        <button on:click={() => {
+            let boardString = "";
+            for (let row of board) {
+                for (let item of row) {
+                    boardString += `${item},`;
+                }
+                boardString += "\n";
+            }
+            console.log(boardString);            
+        }}>Print</button>
     </div>
 </div>
 
@@ -158,9 +194,21 @@
         display: flex;
     }
 
+    .settings {
+        margin: 10px;
+        display: grid;
+        grid-template-columns: 100px 100px;
+        color: white;
+        font-family: monospace;
+    }
+
+    .settings button {
+        padding: 0.1em;
+    }
+
     .wrapper {
         height: 100vh;
-        --grid-size: calc(min(90vw, 90vh) / var(--board-size));
+        --grid-size: calc(min(90vw - 200px, 90vh) / var(--board-size));
         display: flex;
         justify-content: center;
         align-items: center;

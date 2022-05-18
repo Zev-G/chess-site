@@ -1,3 +1,4 @@
+import { tick } from "svelte";
 import { copyBoard, defaultBoard, findMovesByTeam, isTeamInCheck, Move, pieceKind } from "./Chess";
 import type ComputerOpp from "./ComputerOpp";
 import type Opponent from "./Opponent";
@@ -48,6 +49,11 @@ export default class Game {
         this.turn = !this.turn;
         this.winState = this.checkWinState();
         this.onMove();
+        await tick();
+        await tick();
+        await tick();
+        await tick();
+        await tick();
         if (!this.controller(!this.turn).isPlayer()) {
             await new Promise(r => setTimeout(r, this.aiDelayAfter));
         }
