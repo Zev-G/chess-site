@@ -6,6 +6,8 @@ export default class BoardDataGate {
 
     onEmptyDragDropped: (fromX: number, fromY: number) => void = null;
 
+    onDragLeft: (x: number, y: number) => void = null;
+
     dragDropped(x: number, y: number, posX: number, posY: number) {
         for (let spot of this.spots) {
             if (spot.overlaps(x, y)) {

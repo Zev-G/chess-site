@@ -53,6 +53,9 @@ import { dataset_dev, element } from "svelte/internal";
         if (draggable && value != -1) {
             dragging = true;
             dataGate.dragging = true;
+            dataGate.onDragLeft = (x, y) => {
+                updateDragPos(x, y);
+            }
         }
     }
 
@@ -65,6 +68,7 @@ import { dataset_dev, element } from "svelte/internal";
         }
         dragging = false;
         dataGate.dragging = false;
+        dataGate.onDragLeft = null;
         translateStyle = "";
     }
 
@@ -76,9 +80,15 @@ import { dataset_dev, element } from "svelte/internal";
 
     function mouseMoved(event) {
         if (dragging) {
-            let rect = elem.getBoundingClientRect();
-            translateStyle = `transform: translate(${event.clientX - rect.x - rect.width / 2}px, ${event.clientY - rect.y  - rect.height / 2}px);`;
+            updateDragPos(event.clientX, event.clientY);
+        } else if (dataGate.dragging && dataGate.onDragLeft != null) {
+            dataGate.onDragLeft(event.clientX, event.clientY);
         }
+    }
+
+    function updateDragPos(x: number, y: number) {
+        let rect = elem.getBoundingClientRect();
+        translateStyle = `transform: translate(${x - rect.x - rect.width / 2}px, ${y - rect.y  - rect.height / 2}px);`;
     }
 </script>
 
