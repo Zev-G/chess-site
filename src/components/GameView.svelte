@@ -11,6 +11,7 @@
     import RandomOpp from "./RandomOpp";
     import { SuperEasy, Easy, Medium, Tough } from "./Minimax";
     import BoardDataGate from "./BoardDataGate";
+    import GameSideBar from "./GameSideBar.svelte";
 
     export let game: Game;
     let teamWon: number = game.checkWinState();
@@ -116,6 +117,12 @@
         board = game.board;
         teamWon = game.checkWinState();
     }
+
+    function resetRestartGame(): void {
+        game = new Game();
+        board = game.board;
+        teamWon = game.checkWinState();
+    }
 </script>
 
 <div class="wrapper">
@@ -175,6 +182,7 @@
         <div class="icon" transition:fade>
             <GameSettingsToggle bind:open={showingSettings}/>
         </div>
+        <GameSideBar on:newgame={resetRestartGame}/>
     {/if}
 </div>
 
@@ -204,7 +212,8 @@
 
     .wrapper {
         height: 100vh;
-        --grid-size: calc(min(90vw, 90vh) / 8);
+        --side-bar-size: 20vw;
+        --grid-size: calc(min(85vw - var(--side-bar-size), 90vh) / 8);
     }
 
     .wrapper, .inner-wrapper {

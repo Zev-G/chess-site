@@ -172,7 +172,6 @@
                 }
                 boardString += "\n";
             }
-            console.log(boardString);            
         }}>Print</button>
     </div>
 </div>

@@ -19,9 +19,7 @@ export default class Game {
             this.doMove((this._blackController as ComputerOpp).move(this));
         }
     }
-    set whiteController(player: Opponent) {
-        console.log("set");
-        
+    set whiteController(player: Opponent) {        
         this._whiteController = player;
         if (this.turn && !player.isPlayer()) {
             this.doMove((this._whiteController as ComputerOpp).move(this));
