@@ -59,6 +59,14 @@ import { createEventDispatcher } from "svelte";
         align-items: center;
         justify-content: center;
         color: lightgray;
+
+        background-position-x: -1px;
+        --bg-grid-size: calc(var(--grid-size) / 3);
+        background-size: var(--bg-grid-size) var(--bg-grid-size);
+        --grid-color: rgb(59, 59, 62);
+        background-image:
+            linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+            linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
     }
 
     .footer {
