@@ -1,9 +1,26 @@
 <script lang=ts>
-import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, tick } from "svelte";
 
     import { fade } from "svelte/transition";
+    import { CastleMove, imageMap, pieceKind, pieceName, pieceTeam, type Move } from "./Chess";
+    import type PastMove from "./PastMove";
 
-    let dispatch = createEventDispatcher();
+    export let moveHistory: PastMove[];
+    export let board: number[][];
+    
+    let content: HTMLDivElement;
+
+    $: {
+        moveHistory;
+        (async () => {
+            await tick();
+            if (content) {
+                content.scrollTo({ top: content.scrollHeight, behavior: 'smooth' });
+            }
+        })();
+    }
+
+    const dispatch = createEventDispatcher();
 
     function newGame() {
         dispatch("newgame", {});
@@ -14,8 +31,13 @@ import { createEventDispatcher } from "svelte";
     <div class="header">
         Moves
     </div>
-    <div class="content">
-        Coming soon
+    <div class="content" bind:this={content}>
+        {#each moveHistory as move}
+            <div class="move">
+                <img src={imageMap[move.moving]} alt="chess piece">
+                <p>{move.formattedString()}</p>
+            </div>
+        {/each}
     </div>
     <div class="footer">
         <button on:click={newGame}>New Game</button>
@@ -29,7 +51,7 @@ import { createEventDispatcher } from "svelte";
         grid-template-rows: auto 1fr auto;
         background-color: rgb(49, 49, 52);
         border-radius: calc(var(--grid-size) * 0.05);
-        min-width: var(--side-bar-size);
+        width: var(--side-bar-size);
         font-size: clamp(11px, calc(var(--side-bar-size) / 6), 40px);
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         color: white;
@@ -54,19 +76,35 @@ import { createEventDispatcher } from "svelte";
     }
 
     .content {
-        font-size: 0.75em;
-        display: flex;
+        /* display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: center; */
         color: lightgray;
 
         background-position-x: -1px;
         --bg-grid-size: calc(var(--grid-size) / 3);
+        font-size: var(--bg-grid-size);
         background-size: var(--bg-grid-size) var(--bg-grid-size);
         --grid-color: rgb(59, 59, 62);
         background-image:
             linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
             linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+        overflow-y: scroll;
+    }
+
+    .move {
+        display: flex;
+        align-items: center;
+        gap: calc(var(--bg-grid-size) / 8);
+    }
+
+    .move img {
+        height: var(--bg-grid-size);
+    }
+
+    .move p {
+        margin: 0;
+        font-size: 0.6em;
     }
 
     .footer {

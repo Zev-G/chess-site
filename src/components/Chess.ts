@@ -68,6 +68,10 @@ export const imageMap = [
     images.black.king
 ]
 
+export const xText = [
+    "A", "B", "C", "D", "E", "F", "G", "H"
+];
+
 // Y then X indexing, i.e. defaultBoard[2][0] refers to board position y = 2, x = 0
 export function defaultBoard(): number[][] {
     return [
@@ -125,6 +129,20 @@ export function pieceKind(type: number): any {
     if (type == 7 || type == 17) return 4;
     if (type == 8 || type == 9 || type == 18 || type == 19) return 5;
     return null;
+}
+
+export function pieceName(kind: number): string {
+    if (kind == 0) return "Pawn";
+    if (kind == 1) return "Knight";
+    if (kind == 2) return "Bishop";
+    if (kind == 3) return "Rook";
+    if (kind == 4) return "Queen";
+    if (kind == 5) return "King";
+    return `Invalid piece kind: ${kind}, piece name can't be determined`;
+}
+
+export function stringLocation(x: number, y: number) {
+    return `${xText[x]}${8 - y}`;
 }
 
 export function isEnemy(board: number[][], team: boolean, x: number, y: number): boolean {
@@ -443,11 +461,15 @@ export abstract class Move {
     pieces: number[];
     x: number;
     y: number;
+    fromX: number;
+    fromY: number;
 
-    constructor(pieces: number[], x: number, y: number) {
+    constructor(pieces: number[], x: number, y: number, fromX: number, fromY: number) {
         this.pieces = pieces;
         this.x = x;
         this.y = y;
+        this.fromX = fromX;
+        this.fromY = fromY;
     }
 
     abstract do(board: number[][]): void;
@@ -456,15 +478,11 @@ export abstract class Move {
 
 class UpdateType extends Move {
 
-    fromX: number;
-    fromY: number;
     initalValue: number;
     replacement: number;
 
     constructor(piece: number, replacenment: number, fromX: number, fromY: number, x: number, y: number) {
-        super([ piece ], x, y);
-        this.fromX = fromX;
-        this.fromY = fromY;
+        super([ piece ], x, y, fromX, fromY);;
         this.replacement = replacenment;
     }
 
@@ -511,14 +529,10 @@ class SimpleMove extends Move {
 
 class PawnMoveTwoForward extends Move {
 
-    fromX: number;
-    fromY: number;
     replacement: number;
 
     constructor(piece: number, fromX: number, fromY: number, x: number, y: number) {
-        super([ piece ], x, y);
-        this.fromX = fromX;
-        this.fromY = fromY;
+        super([ piece ], x, y, fromX, fromY);
         
         this.replacement = piece + 1;
     }
@@ -536,15 +550,11 @@ class PawnMoveTwoForward extends Move {
 
 class PawnMove extends Move {
 
-    fromX: number;
-    fromY: number;
     replacement: number;
     initalValue: number;
 
     constructor(piece: number, fromX: number, fromY: number, x: number, y: number) {
-        super([ piece ], x, y);
-        this.fromX = fromX;
-        this.fromY = fromY;
+        super([ piece ], x, y, fromX, fromY);
         
         if (piece < 10) this.replacement = 2;
         else this.replacement = 12;
@@ -562,7 +572,7 @@ class PawnMove extends Move {
 
 }
 
-class CastleMove extends Move {
+export class CastleMove extends Move {
 
     replaceKing: number;
     replaceRook: number;
@@ -571,7 +581,7 @@ class CastleMove extends Move {
     kingFromX: number;
 
     constructor(king: Piece, rook: Piece) {
-        super([ king.type, rook.type ], (rook.x > king.x ? 6 : 2), king.y);
+        super([ king.type, rook.type ], (rook.x > king.x ? 6 : 2), king.y, king.x, king.y);
         if (pieceTeam(king.type)) {
             this.replaceKing = 9;
             this.replaceRook = 6;
@@ -603,14 +613,10 @@ class CastleMove extends Move {
 class EnPassantMove extends Move {
     
     takeX: number;
-    fromX: number;
-    fromY: number;
 
     constructor(team: boolean, takeX: number, fromX: number, fromY: number, x: number, y: number) {
-        super((team ? [ 2, 11 ] : [ 12, 1]), x, y);
+        super((team ? [ 2, 11 ] : [ 12, 1]), x, y, fromX, fromY);
         this.takeX = takeX;
-        this.fromX = fromX;
-        this.fromY = fromY;
     }
 
     do(board: number[][]): void {

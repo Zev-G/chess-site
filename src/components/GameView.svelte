@@ -12,6 +12,7 @@
     import { SuperEasy, Easy, Medium, Tough } from "./Minimax";
     import BoardDataGate from "./BoardDataGate";
     import GameSideBar from "./GameSideBar.svelte";
+    import PastMove from "./PastMove";
 
     export let game: Game;
     let teamWon: number = game.checkWinState();
@@ -30,11 +31,16 @@
 
     let dataGate = new BoardDataGate();
 
-    $: game.onMove = () => {
+    let moveHistory: Move[] = [];
+    let pastMoves: PastMove[] = [];
+
+    $: game.onMove = (move, prevBoard) => {
         board = [...board];
         possibleMoves = [];
         possibleMoveSpots = [];
         teamWon = game.winState;
+        moveHistory = game.moveHistory;
+        pastMoves = [...pastMoves, PastMove.convertMove(move, prevBoard)];
     }
 
     const controllerTransform = {
@@ -111,17 +117,21 @@
     }
 
     function restartGame(): void {
+        game.stop();
         game = new Game();
         game.blackController = controllerTransform[blackController]();
         game.whiteController = controllerTransform[whiteController]();
         board = game.board;
         teamWon = game.checkWinState();
+        pastMoves = [];
     }
 
     function resetRestartGame(): void {
+        game.stop();
         game = new Game();
         board = game.board;
         teamWon = game.checkWinState();
+        pastMoves = [];
     }
 </script>
 
@@ -182,7 +192,7 @@
         <div class="icon" transition:fade>
             <GameSettingsToggle bind:open={showingSettings}/>
         </div>
-        <GameSideBar on:newgame={resetRestartGame}/>
+        <GameSideBar bind:board={board} bind:moveHistory={pastMoves} on:newgame={resetRestartGame}/>
     {/if}
 </div>
 
@@ -212,7 +222,7 @@
 
     .wrapper {
         height: 100vh;
-        --side-bar-size: 20vw;
+        --side-bar-size: 30vw;
         --grid-size: calc(min(85vw - var(--side-bar-size), 90vh) / 8);
     }
 

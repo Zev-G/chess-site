@@ -11,6 +11,10 @@ export default class Game {
     winState: number = null;
     movesSinceProgession: number = 0;
 
+    moveHistory: Move[] = [];
+
+    running: boolean = true;
+
     _blackController: Opponent = new Player();
     _whiteController: Opponent = new Player();
     set blackController(player: Opponent) {
@@ -31,7 +35,7 @@ export default class Game {
     aiDelayAfter: number = 300;
     aiDelayBefore: number = 100;
 
-    onMove: () => void = () => {};
+    onMove: (move: Move, board: number[][]) => void = () => {};
 
     async doMove(move: Move) {        
         if (pieceKind(move.pieces[0]) != 0 && this.board[move.y][move.x] == -1) {
@@ -42,23 +46,23 @@ export default class Game {
         if (!this.controller(this.turn).isPlayer()) {
             await new Promise(r => setTimeout(r, this.aiDelayBefore));
         }
+        if (!this.running) return;
+        let prevBoard = copyBoard(this.board);
         move.do(this.board);
+        this.moveHistory = [...this.moveHistory, move];
         this.positions.push(copyBoard(this.board));
         this.turn = !this.turn;
         this.winState = this.checkWinState();
-        this.onMove();
-        await tick();
-        await tick();
-        await tick();
-        await tick();
-        await tick();
-        if (!this.controller(!this.turn).isPlayer()) {
-            await new Promise(r => setTimeout(r, this.aiDelayAfter));
-        }
-
-        if (this.winState == null && !this.controller(this.turn).isPlayer()) {
-            let controller = this.controller(this.turn) as ComputerOpp;
-            this.doMove(controller.move(this));
+        this.onMove(move, prevBoard);
+        if (this.running) {
+            if (!this.controller(!this.turn).isPlayer()) {
+                await new Promise(r => setTimeout(r, this.aiDelayAfter));
+            }
+    
+            if (this.winState == null && !this.controller(this.turn).isPlayer()) {
+                let controller = this.controller(this.turn) as ComputerOpp;
+                this.doMove(controller.move(this));
+            }
         }
     }
 
@@ -103,6 +107,10 @@ export default class Game {
 
     controller(team: boolean) {
         return team ? this.whiteController : this.blackController;
+    }
+
+    stop() {
+        this.running = false;
     }
 
 }
