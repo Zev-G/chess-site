@@ -1,4 +1,3 @@
-import { tick } from "svelte";
 import { copyBoard, defaultBoard, findMovesByTeam, isTeamInCheck, Move, pieceKind } from "./Chess";
 import type ComputerOpp from "./ComputerOpp";
 import type Opponent from "./Opponent";

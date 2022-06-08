@@ -1,7 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher, onMount } from "svelte"; 
     import FaPlus from 'svelte-icons/fa/FaPlus.svelte'
-import { dataset_dev, element } from "svelte/internal";
+    import { dataset_dev, element } from "svelte/internal";
     import type BoardDataGate from "./BoardDataGate";
     import { imageMap } from "./Chess";
 
@@ -69,7 +69,8 @@ import { dataset_dev, element } from "svelte/internal";
         dragging = false;
         dataGate.dragging = false;
         dataGate.onDragLeft = null;
-        translateStyle = "";
+        translateStyle = "transition: transform 0.2s;";
+        
     }
 
     function pieceRequested(): void {
@@ -156,5 +157,8 @@ import { dataset_dev, element } from "svelte/internal";
         -moz-user-select: none;
         -webkit-user-select: none;
         -ms-user-select: none;
+
+        /* transform: translate(calc(var(--grid-size) * deltX)px, calc(var(--grid-size) * deltY)px); */
+        /* transition: transform 0; */
     }
 </style>
