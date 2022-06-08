@@ -35,6 +35,13 @@
     let pastMoves: PastMove[] = [];
 
     $: game.onMove = (move, prevBoard) => {
+        let controller = game.turn ? game.blackController : game.whiteController;
+        console.log(controller.isPlayer());
+        
+        if (!controller.isPlayer()) {
+            console.log(`1asdf`);
+            animateMove(move);
+        }
         board = [...board];
         possibleMoves = [];
         possibleMoveSpots = [];
@@ -95,11 +102,15 @@
         }
         promotingPawn = null;
         if (!fromDrag) {            
-            dataGate.spots[move.fromX + move.fromY * 8].animateTo(move.x, move.y);
-            dataGate.spots[move.x + move.y * 8].suspend();
+            animateMove(move);
         }
         fromDrag = false;
         game.doMove(move);
+    }
+
+    function animateMove(move: Move) {
+        dataGate.spots[move.fromX + move.fromY * 8].animateTo(move.x, move.y);
+        dataGate.spots[move.x + move.y * 8].suspend();
     }
 
     function promote(to: number) {
