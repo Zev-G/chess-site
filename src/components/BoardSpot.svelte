@@ -16,6 +16,10 @@
     export let possibleMoves: number[] = [];
     export let size = 8;
 
+    const animationTime = 0.3;
+    let animating = false;
+    $: piece = animating ? piece : value;
+
     let elem: HTMLDivElement;
 
     onMount(() => {
@@ -29,11 +33,27 @@
 
             },
             dragDropped: function(fromX: number, fromY: number) {
-                if (draggable) {
+                if (draggable && !dataGate.animating) {
                     eventDispatcher("dragDropped", {
                         x, y, fromX, fromY
                     });
                 }
+            },
+            animateTo: function(toX: number, toY: number) {
+                const deltX: number = toX - x;
+                const deltY: number = toY - y;
+                translateStyle = `transition: transform ${animationTime}s; transform: translate(calc(var(--grid-size) * ${deltX}), calc(var(--grid-size) * ${deltY}));`;
+                animating = true;
+                dataGate.animating = true;
+                setTimeout(() => {
+                    animating = false;
+                    dataGate.animating = false;
+                    translateStyle = ``;
+                }, animationTime * 1000 * 1.4);
+            },
+            suspend: function() {
+                animating = true;
+                setTimeout(() => animating = false, animationTime * 1000);
             },
             elem
         });
@@ -50,7 +70,7 @@
         eventDispatcher("movesRequested", {
             x, y
         });
-        if (draggable && value != -1) {
+        if (draggable && !dataGate.animating && value != -1) {
             dragging = true;
             dataGate.dragging = true;
             dataGate.onDragLeft = (x, y) => {
@@ -69,8 +89,9 @@
         dragging = false;
         dataGate.dragging = false;
         dataGate.onDragLeft = null;
-        translateStyle = "transition: transform 0.2s;";
-        
+        if (!animating) {
+            translateStyle = "transition: transform 0.2s;";   
+        }   
     }
 
     function pieceRequested(): void {
@@ -94,8 +115,8 @@
 </script>
 
 <div bind:this={elem} class={"board-spot" + (light ? " light" : " dark") + (showMove ? " is-move" : "") + (editable ? " editable" : "")} on:mousedown={pressed} on:mouseup={released} on:mousemove={mouseMoved} on:mouseenter={() => dataGate.lastHover = elem}>
-    {#if value !== -1}
-        <img src={imageMap[value]} alt="Chess piece" style={translateStyle}>
+    {#if piece !== -1}
+        <img src={imageMap[piece]} alt="Chess piece" style={translateStyle}>
     {/if}
     {#if showMove}
         <div class="circle"></div>

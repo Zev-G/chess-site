@@ -3,6 +3,7 @@ export default class BoardDataGate {
     lastHover: HTMLDivElement;
     dragging: boolean;
     spots: any[] = [];
+    animating: boolean = false;
 
     onEmptyDragDropped: (fromX: number, fromY: number) => void = null;
 

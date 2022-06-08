@@ -60,6 +60,12 @@
     let showing = false;
     onMount(() => showing = true);
 
+    let fromDrag: boolean = false;
+
+    function dragDropped(event) {
+        fromDrag = true;
+        movesRequested(event);
+    }
     function movesRequested(event): void {
         if (promotingPawn == null) {
             let x: number = event.detail.x as number;
@@ -68,6 +74,7 @@
                 move(x, y);
             } else {
                 generateMoves(x, y);
+                fromDrag = false;
             }
         }
     }
@@ -87,6 +94,11 @@
             return;
         }
         promotingPawn = null;
+        if (!fromDrag) {            
+            dataGate.spots[move.fromX + move.fromY * 8].animateTo(move.x, move.y);
+            dataGate.spots[move.x + move.y * 8].suspend();
+        }
+        fromDrag = false;
         game.doMove(move);
     }
 
@@ -142,7 +154,7 @@
                 {#each board as row, y}
                     {#each row as piece, x}
                         <div>
-                            <BoardSpot dataGate={dataGate} possibleMoves={possibleMoveSpots} on:movesRequested={movesRequested} on:dragDropped={movesRequested} value={piece} x={x} y={y}/>
+                            <BoardSpot dataGate={dataGate} possibleMoves={possibleMoveSpots} on:movesRequested={movesRequested} on:dragDropped={dragDropped} value={piece} x={x} y={y}/>
                         </div>
                     {/each}
                 {/each}
