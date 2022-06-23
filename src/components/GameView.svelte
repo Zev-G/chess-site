@@ -13,6 +13,7 @@
     import BoardDataGate from "./BoardDataGate";
     import GameSideBar from "./GameSideBar.svelte";
     import PastMove from "./PastMove";
+import { transition_out } from "svelte/internal";
 
     export let game: Game;
     let teamWon: number = game.checkWinState();
@@ -33,6 +34,8 @@
 
     let moveHistory: Move[] = [];
     let pastMoves: PastMove[] = [];
+
+    let showBoard = true;
 
     $: game.onMove = (move, prevBoard) => {
         let controller = game.turn ? game.blackController : game.whiteController;
@@ -156,19 +159,63 @@
         teamWon = game.checkWinState();
         pastMoves = [];
     }
+
+    function showNewGameView() {
+        showBoard = false;
+        game.running = false;
+    }
+
+    function startGame() {
+        showBoard = true;
+        restartGame();
+    }
 </script>
 
 <div class="wrapper">
     {#if showing}
         <div class="inner-wrapper">
-            <div class={"board" + (showingPopup ? " grayed-out" : "")} transition:fade>
-                {#each board as row, y}
-                    {#each row as piece, x}
-                        <div>
-                            <BoardSpot dataGate={dataGate} possibleMoves={possibleMoveSpots} on:movesRequested={movesRequested} on:dragDropped={dragDropped} value={piece} x={x} y={y}/>
+            <div class="board-wrapper">
+                <div class={"board-settings" + (!showBoard ? " not-absolute" : "")}>
+                    <div class="board-grid-bg">
+                        <h1>Create New Game</h1>
+                        <div class="ai-controllers">
+                            <div class="white-controller">
+                                White Controller
+                                <ul>
+                                    <li class={whiteController == "player" ? "selected" : ""} on:click={() => whiteController = "player"}>Player</li>
+                                    <li class={whiteController == "random" ? "selected" : ""} on:click={() => whiteController = "random"}>Random</li>
+                                    <li class={whiteController == "easy" ? "selected" : ""} on:click={() => whiteController = "easy"}>Easy</li>
+                                    <li class={whiteController == "medium" ? "selected" : ""} on:click={() => whiteController = "medium"}>Medium</li>
+                                    <li class={whiteController == "tough" ? "selected" : ""} on:click={() => whiteController = "tough"}>Tough</li>
+                                </ul>
+                            </div>
+                            <div class="black-controller">
+                                Black Controller
+                                <ul>
+                                    <li class={blackController == "player" ? "selected" : ""} on:click={() => blackController = "player"}>Player</li>
+                                    <li class={blackController == "random" ? "selected" : ""} on:click={() => blackController = "random"}>Random</li>
+                                    <li class={blackController == "easy" ? "selected" : ""} on:click={() => blackController = "easy"}>Easy</li>
+                                    <li class={blackController == "medium" ? "selected" : ""} on:click={() => blackController = "medium"}>Medium</li>
+                                    <li class={blackController == "tough" ? "selected" : ""} on:click={() => blackController = "tough"}>Tough</li>
+                                </ul>
+                            </div>
                         </div>
-                    {/each}
-                {/each}
+                        <h2>FEN</h2>
+                        <input type="text" name="" id="" value="Not implemented yet">
+                        <button on:click={startGame}>Start Game</button>
+                    </div>
+                </div>
+                {#if showBoard}
+                    <div transition:fade={{ duration: 300 }} class={"board" + (showingPopup ? " grayed-out" : "")}>
+                        {#each board as row, y}
+                            {#each row as piece, x}
+                                <div>
+                                    <BoardSpot dataGate={dataGate} possibleMoves={possibleMoveSpots} on:movesRequested={movesRequested} on:dragDropped={dragDropped} value={piece} x={x} y={y}/>
+                                </div>
+                            {/each}
+                        {/each}
+                    </div>
+                {/if}
             </div>
             {#if showingSettings}
                 <BoardPopup on:outclick={() => showingSettings = false}>
@@ -212,10 +259,10 @@
                 </BoardPopup>
             {/if}
         </div>
-        <div class="icon" transition:fade>
+        <div class="icon">
             <GameSettingsToggle bind:open={showingSettings}/>
         </div>
-        <GameSideBar bind:board={board} bind:moveHistory={pastMoves} on:newgame={resetRestartGame}/>
+        <GameSideBar bind:board={board} bind:moveHistory={pastMoves} on:newgame={showNewGameView}/>
     {/if}
 </div>
 
@@ -228,9 +275,9 @@
     img {
         width: calc(var(--grid-size) * 1.25);
     }
-    button {
+    /* button {
         font-size: calc(var(--grid-size) * 0.175);
-    }
+    } */
     
     .promotion-options > button > img {
         width: calc(var(--grid-size) * 0.871);
@@ -262,11 +309,119 @@
     }
 
     .board {
+        position: absolute;
         display: grid;
         grid-template-columns: repeat(8, var(--grid-size));
         grid-template-rows: repeat(8, var(--grid-size));
         grid-auto-flow: row;
         filter: drop-shadow(0 0 10px black);
         transition: opacity 0.5s;
+    }
+
+    .board-wrapper {
+        width: calc(8 * var(--grid-size));
+        height: calc(8 * var(--grid-size));
+    }
+
+    .board-settings {
+        width: calc(8 * var(--grid-size));
+        height: calc(8 * var(--grid-size));
+        position: absolute;
+
+        background-color: rgb(36, 36, 38);
+
+        color: white;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: calc(var(--grid-size) / 4);
+    }
+
+    .board-grid-bg {
+        width: calc(8 * var(--grid-size));
+        height: calc(8 * var(--grid-size));
+        position: absolute;
+
+        /* padding: 0 calc(var(--grid-size) / 4); */
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+
+        background-size: calc(var(--grid-size) - 1px/4) calc(var(--grid-size) - 1px/4);
+        --grid-color: rgb(47, 47, 50);
+        background-image:
+            linear-gradient(to right, var(--grid-color) 2px, transparent 2px),
+            linear-gradient(to bottom, var(--grid-color) 2px, transparent 2px);
+    }
+
+    .board-settings h1 {
+        margin-top: calc(var(--grid-size) / 8);
+    }
+    
+    .board-settings ul {
+        margin-top: calc(var(--grid-size) / 8);
+        font-size: calc(var(--grid-size) / 5);
+        color: lightgray;
+        padding-left: 0;
+    }
+
+    li {
+        list-style: none;
+        padding: calc(var(--grid-size) / 14) calc(var(--grid-size) / 4);
+        border-radius: calc(var(--grid-size) / 8);
+        cursor: pointer;
+        transition: padding-left 0.2s, color 0.2s;
+    }
+
+    li:hover {
+        padding-left: calc(var(--grid-size) / 3);
+        color: white;
+    }
+
+    li.selected {
+        background-color: rgb(25, 25, 26);
+    }
+
+    .ai-controllers {
+        margin-top: calc(var(--grid-size) / 2.75);
+        display: flex;
+        gap: var(--grid-size);
+        color: rgb(231, 231, 231);
+    }
+
+    .white-controller, .black-controller {
+        background-color: rgba(25, 25, 26, 0.706);
+        padding: calc(var(--grid-size) / 8) calc(var(--grid-size) / 2);
+        border-radius: calc(var(--grid-size) / 8);
+    }
+
+    h2 {
+        margin: calc(var(--grid-size) / 8);
+    }
+
+    input {
+        margin: 0;
+        padding: calc(var(--grid-size) / 16);
+        width: calc(var(--grid-size) * 4.5);
+        font-size: calc(var(--grid-size) / 5);
+        color: lightgray;
+        background-color: rgb(25, 25, 26);
+        border: none;
+        border-radius: calc(var(--grid-size) / 12);
+        outline-width: 0;
+        pointer-events: none;
+        opacity: 0.5;
+    }
+
+    button {
+        /* font-size: 0.75em; */
+        /* border-radius: 0.15em; */
+        margin-top: calc(var(--grid-size) / 1.28);
+        background-color: rgb(28, 28, 29);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: calc(var(--grid-size) / 2.75);
+        border-radius: calc(var(--grid-size) / 7);
+    }
+
+    button:hover {
+        background-color: rgb(22, 22, 23);
     }
 </style>
