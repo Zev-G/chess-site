@@ -1,7 +1,6 @@
 <script lang=ts>
     import { createEventDispatcher, tick } from "svelte";
 
-    import { fade } from "svelte/transition";
     import { CastleMove, imageMap, pieceKind, pieceName, pieceTeam, type Move } from "./Chess";
     import type PastMove from "./PastMove";
     import IoMdRefresh from 'svelte-icons/io/IoMdRefresh.svelte'
@@ -79,7 +78,7 @@
     .header {
         background-color: rgb(34, 34, 35);
         filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.1));
-        font-size: calc(var(--side-bar-size) / 8);
+        font-size: calc(var(--side-bar-size) / 11);
     }
 
     .content {
