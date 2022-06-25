@@ -49,6 +49,9 @@ import { transition_out } from "svelte/internal";
         possibleMoves = [];
         possibleMoveSpots = [];
         teamWon = game.winState;
+        if (teamWon != null && showingSettings) {
+            showingSettings = false;
+        }
         moveHistory = game.moveHistory;
         pastMoves = [...pastMoves, PastMove.convertMove(move, prevBoard)];
     }
@@ -162,6 +165,8 @@ import { transition_out } from "svelte/internal";
 
     function showNewGameView() {
         showBoard = false;
+        showingSettings = false;
+        teamWon = null;
         game.running = false;
     }
 
@@ -175,7 +180,7 @@ import { transition_out } from "svelte/internal";
     {#if showing}
         <div class="inner-wrapper">
             <div class="board-wrapper">
-                <div class={"board-settings" + (!showBoard ? " not-absolute" : "")}>
+                <div class={"board-settings" + (!showBoard ? " not-absolute" : "")} style={showBoard ? `transition: opacity 0ms 500ms; opacity: 0;` : `opacity: 1;`}>
                     <div class="board-grid-bg">
                         <h1>Create New Game</h1>
                         <div class="ai-controllers">
@@ -205,19 +210,17 @@ import { transition_out } from "svelte/internal";
                         <button on:click={startGame}>Start Game</button>
                     </div>
                 </div>
-                {#if showBoard}
-                    <div transition:fade={{ duration: 300 }} class={"board" + (showingPopup ? " grayed-out" : "")}>
+                    <div class={"board" + (showingPopup ? " grayed-out" : "")} style={showBoard ? "" : "pointer-events: none;"}>
                         {#each board as row, y}
                             {#each row as piece, x}
                                 <div>
-                                    <BoardSpot dataGate={dataGate} possibleMoves={possibleMoveSpots} on:movesRequested={movesRequested} on:dragDropped={dragDropped} value={piece} x={x} y={y}/>
+                                    <BoardSpot show={showBoard} dataGate={dataGate} possibleMoves={possibleMoveSpots} on:movesRequested={movesRequested} on:dragDropped={dragDropped} value={piece} x={x} y={y}/>
                                 </div>
                             {/each}
                         {/each}
                     </div>
-                {/if}
             </div>
-            {#if showingSettings}
+            {#if showingSettings && showBoard}
                 <BoardPopup on:outclick={() => showingSettings = false}>
                     <GameSettings bind:whiteController bind:blackController game={game} on:click={() => showingSettings = false}/>
                 </BoardPopup>
@@ -259,10 +262,16 @@ import { transition_out } from "svelte/internal";
                 </BoardPopup>
             {/if}
         </div>
-        <div class="icon">
+        <div class="icon" style={showBoard ? "" : "pointer-events: none;"}>
             <GameSettingsToggle bind:open={showingSettings}/>
         </div>
-        <GameSideBar bind:board={board} bind:moveHistory={pastMoves} on:newgame={showNewGameView}/>
+        <GameSideBar bind:board={board} bind:moveHistory={pastMoves} on:newgame={() => {
+            if (showBoard) {
+                showNewGameView();
+            } else {
+                startGame();
+            }
+        }} on:restartgame={restartGame}/>
     {/if}
 </div>
 

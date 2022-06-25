@@ -1,7 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher, onMount } from "svelte"; 
-    import FaPlus from 'svelte-icons/fa/FaPlus.svelte'
-    import { dataset_dev, element } from "svelte/internal";
+    import FaPlus from 'svelte-icons/fa/FaPlus.svelte';
     import type BoardDataGate from "./BoardDataGate";
     import { imageMap } from "./Chess";
 
@@ -15,6 +14,7 @@
     export let y: number;
     export let possibleMoves: number[] = [];
     export let size = 8;
+    export let show = true;
 
     const animationTime = 0.3;
     let animating = false;
@@ -40,6 +40,8 @@
                 }
             },
             animateTo: function(toX: number, toY: number) {
+                console.log(`called`);
+                
                 const deltX: number = toX - x;
                 const deltY: number = toY - y;
                 translateStyle = `transition: transform ${animationTime}s; transform: translate(calc(var(--grid-size) * ${deltX}), calc(var(--grid-size) * ${deltY}));`;
@@ -62,6 +64,12 @@
     $: flatValue = y * size + x;
     let dragging = false;
     let translateStyle = "";
+
+    // $: {
+    //     if (value == -1 && !animating) {
+    //         translateStyle = "";
+    //     }
+    // }
 
     $: light = (y + x) % 2 == 0;
     $: showMove = possibleMoves.indexOf(flatValue) != -1;
@@ -114,7 +122,7 @@
     }
 </script>
 
-<div bind:this={elem} class={"board-spot" + (light ? " light" : " dark") + (showMove ? " is-move" : "") + (editable ? " editable" : "")} on:mousedown={pressed} on:mouseup={released} on:mousemove={mouseMoved} on:mouseenter={() => dataGate.lastHover = elem}>
+<div bind:this={elem} class={"board-spot" + (light ? " light" : " dark") + (showMove ? " is-move" : "") + (editable ? " editable" : "")} on:mousedown={pressed} on:mouseup={released} on:mousemove={mouseMoved} on:mouseenter={() => dataGate.lastHover = elem} style={show ? `transition: opacity 500ms; opacity: 1;` : `transition: opacity ${Math.random() * 500 + 250}ms ${Math.random() * 250}ms; opacity: 0;`}>
     {#if piece !== -1}
         <img src={imageMap[piece]} alt="Chess piece" style={translateStyle}>
     {/if}
