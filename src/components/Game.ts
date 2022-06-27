@@ -37,6 +37,7 @@ export default class Game {
     onMove: (move: Move, board: number[][]) => void = () => {};
 
     async doMove(move: Move) {        
+        if (!this.running) return;
         if (pieceKind(move.pieces[0]) != 0 && this.board[move.y][move.x] == -1) {
             this.movesSinceProgession++;
         } else {
@@ -45,7 +46,6 @@ export default class Game {
         if (!this.controller(this.turn).isPlayer()) {
             await new Promise(r => setTimeout(r, this.aiDelayBefore));
         }
-        if (!this.running) return;
         let prevBoard = copyBoard(this.board);
         move.do(this.board);
         this.moveHistory = [...this.moveHistory, move];

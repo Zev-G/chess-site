@@ -39,9 +39,7 @@
                     });
                 }
             },
-            animateTo: function(toX: number, toY: number) {
-                console.log(`called`);
-                
+            animateTo: function(toX: number, toY: number) {                
                 const deltX: number = toX - x;
                 const deltY: number = toY - y;
                 translateStyle = `transition: transform ${animationTime}s; transform: translate(calc(var(--grid-size) * ${deltX}), calc(var(--grid-size) * ${deltY}));`;

@@ -72,6 +72,14 @@ export const xText = [
     "A", "B", "C", "D", "E", "F", "G", "H"
 ];
 
+const notation = [
+    "a", "b", "c", "d", "e", "f", "g", "h"
+]
+
+export function algebraicNotationMatches(spot: string, x: number, y: number): boolean {
+    return x + 1 == notation.indexOf(spot[0]) && y + 1 == Number.parseInt(spot[1]);
+}
+
 // Y then X indexing, i.e. defaultBoard[2][0] refers to board position y = 2, x = 0
 export function defaultBoard(): number[][] {
     return [

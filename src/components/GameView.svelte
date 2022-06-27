@@ -14,6 +14,7 @@
     import GameSideBar from "./GameSideBar.svelte";
     import PastMove from "./PastMove";
 import { transition_out } from "svelte/internal";
+import { interpret, toGame } from "./FEN";
 
     export let game: Game;
     let teamWon: number = game.checkWinState();
@@ -37,12 +38,12 @@ import { transition_out } from "svelte/internal";
 
     let showBoard = true;
 
+    let fen = "";
+
     $: game.onMove = (move, prevBoard) => {
         let controller = game.turn ? game.blackController : game.whiteController;
-        console.log(controller.isPlayer());
         
         if (!controller.isPlayer()) {
-            console.log(`1asdf`);
             animateMove(move);
         }
         board = [...board];
@@ -148,6 +149,11 @@ import { transition_out } from "svelte/internal";
     function restartGame(): void {
         game.stop();
         game = new Game();
+        if (fen != "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" && fen != "") {
+            const gameTemplate: Game = toGame(interpret(fen));
+            game.board = gameTemplate.board;
+            game.turn = gameTemplate.turn;
+        }
         game.blackController = controllerTransform[blackController]();
         game.whiteController = controllerTransform[whiteController]();
         board = game.board;
@@ -206,7 +212,7 @@ import { transition_out } from "svelte/internal";
                             </div>
                         </div>
                         <h2>FEN</h2>
-                        <input type="text" name="" id="" value="Not implemented yet">
+                        <input type="text" name="" id="" bind:value={fen} placeholder="Set a F.E.N. for the game here.">
                         <button on:click={startGame}>Start Game</button>
                     </div>
                 </div>
@@ -416,8 +422,8 @@ import { transition_out } from "svelte/internal";
         border: none;
         border-radius: calc(var(--grid-size) / 12);
         outline-width: 0;
-        pointer-events: none;
-        opacity: 0.5;
+        /* pointer-events: none;
+        opacity: 0.5; */
     }
 
     button {
