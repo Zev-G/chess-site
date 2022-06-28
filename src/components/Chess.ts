@@ -26,22 +26,44 @@ Pieces:
 
 */
 
+// export const images = {
+//     white: {
+//         pawn:   "/white/pawn.png",
+//         knight: "/white/knight.png",
+//         bishop: "/white/bishop.png",
+//         rook:   "/white/rook.png",
+//         queen:  "/white/queen.png",
+//         king:   "/white/king.png"
+//     },
+//     black: {
+//         pawn:   "/black/pawn.png",
+//         knight: "/black/knight.png",
+//         bishop: "/black/bishop.png",
+//         rook:   "/black/rook.png",
+//         queen:  "/black/queen.png",
+//         king:   "/black/king.png"
+//     }
+// };
+
+// recommend: staunty, and tatiana
+let selectedImageSet = "staunty";
+
 export const images = {
     white: {
-        pawn:   "/white/pawn.png",
-        knight: "/white/knight.png",
-        bishop: "/white/bishop.png",
-        rook:   "/white/rook.png",
-        queen:  "/white/queen.png",
-        king:   "/white/king.png"
+        pawn:   `/pieces/${selectedImageSet}/wP.svg`,
+        knight: `/pieces/${selectedImageSet}/wN.svg`,
+        bishop: `/pieces/${selectedImageSet}/wB.svg`,
+        rook:   `/pieces/${selectedImageSet}/wR.svg`,
+        queen:  `/pieces/${selectedImageSet}/wQ.svg`,
+        king:   `/pieces/${selectedImageSet}/wK.svg`
     },
     black: {
-        pawn:   "/black/pawn.png",
-        knight: "/black/knight.png",
-        bishop: "/black/bishop.png",
-        rook:   "/black/rook.png",
-        queen:  "/black/queen.png",
-        king:   "/black/king.png"
+        pawn:   `/pieces/${selectedImageSet}/bP.svg`,
+        knight: `/pieces/${selectedImageSet}/bN.svg`,
+        bishop: `/pieces/${selectedImageSet}/bB.svg`,
+        rook:   `/pieces/${selectedImageSet}/bR.svg`,
+        queen:  `/pieces/${selectedImageSet}/bQ.svg`,
+        king:   `/pieces/${selectedImageSet}/bK.svg`
     }
 };
 
