@@ -535,12 +535,10 @@ export class PawnPromotion extends UpdateType {
 
 class SimpleMove extends Move {
 
-    fromX: number;
-    fromY: number;
     initalValue: number;
 
     constructor(piece: number, fromX: number, fromY: number, x: number, y: number) {
-        super([ piece ], x, y);
+        super([ piece ], x, y, fromX, fromY);
         this.fromX = fromX;
         this.fromY = fromY;
     }
