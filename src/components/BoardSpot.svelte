@@ -122,7 +122,9 @@
 
 <div bind:this={elem} class={"board-spot" + (light ? " light" : " dark") + (showMove ? " is-move" : "") + (editable ? " editable" : "")} on:mousedown={pressed} on:mouseup={released} on:mousemove={mouseMoved} on:mouseenter={() => dataGate.lastHover = elem} style={show ? `transition: opacity 500ms; opacity: 1;` : `transition: opacity ${Math.random() * 500 + 250}ms ${Math.random() * 250}ms; opacity: 0;`}>
     {#if piece !== -1}
-        <img src={imageMap[piece]} alt="Chess piece" style={translateStyle}>
+        <div style={translateStyle}>
+            <img src={imageMap[piece]} alt="Chess piece">
+        </div>
     {/if}
     {#if showMove}
         <div class="circle"></div>
@@ -184,5 +186,6 @@
         -moz-user-select: none;
         -webkit-user-select: none;
         -ms-user-select: none;
+        pointer-events: none;
     }
 </style>
