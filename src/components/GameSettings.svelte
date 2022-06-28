@@ -70,7 +70,7 @@
     }
 
     .selected {
-        background-color: rgb(17, 17, 19);;
+        background-color: var(--dark-5);
     }
 
     span {

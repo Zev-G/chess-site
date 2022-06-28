@@ -9,6 +9,6 @@
     :global(html, body) {
         margin: 0;
         padding: 0;
-        background-color: rgb(29, 31, 36);
+        background-color: var(--root-bg);
     }
 </style>

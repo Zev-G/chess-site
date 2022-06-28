@@ -141,7 +141,7 @@
 
     .add-piece {
         width: calc(var(--grid-size) * 0.5);
-        color:rgba(0, 0, 0, 0.4);
+        color: var(--dark-overlay);
         opacity: 0;
         transition: opacity 0.1s;
         cursor: pointer;
@@ -154,7 +154,7 @@
         width: calc(var(--grid-size) / 3.5);
         height: calc(var(--grid-size) / 3.5);
         border-radius: 50%;
-        background-color: rgba(0, 0, 0, 0.4);
+        background-color: var(--dark-overlay);
     }
 
     .board-spot {
@@ -171,10 +171,10 @@
     }
 
     .light {
-        background-color: hsl(60deg 45% 88%);
+        background-color: var(--light-square);
     }
     .dark {
-        background-color: hsl(90deg 27% 46%);
+        background-color: var(--dark-square);
     }
 
     img {
@@ -184,8 +184,5 @@
         -moz-user-select: none;
         -webkit-user-select: none;
         -ms-user-select: none;
-
-        /* transform: translate(calc(var(--grid-size) * deltX)px, calc(var(--grid-size) * deltY)px); */
-        /* transition: transform 0; */
     }
 </style>

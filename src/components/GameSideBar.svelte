@@ -59,8 +59,8 @@
         width: var(--side-bar-size);
         font-size: clamp(11px, calc(var(--side-bar-size) / 6), 40px);
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: white;
-        filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.4));
+        color: var(--text-main);
+        filter: drop-shadow(0 0 10px var(--dark-overlay));
     }
 
     .footer, .header {
@@ -121,11 +121,11 @@
     button {
         font-size: calc(var(--side-bar-size) / 20);
         border-radius: 0.15em;
-        background-color: rgb(36, 36, 38);
+        background-color: var(--bg);
     }
 
     button:hover {
-        background-color: rgb(29, 29, 31);
+        background-color: var(--dark-bg);
     }
 
     .restart-game {

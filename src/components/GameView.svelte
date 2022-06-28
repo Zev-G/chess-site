@@ -329,7 +329,7 @@ import { interpret, toGame } from "./FEN";
         grid-template-columns: repeat(8, var(--grid-size));
         grid-template-rows: repeat(8, var(--grid-size));
         grid-auto-flow: row;
-        filter: drop-shadow(0 0 10px black);
+        filter: drop-shadow(0 0 10px var(--off-black));
         transition: opacity 0.5s;
     }
 
@@ -403,7 +403,7 @@ import { interpret, toGame } from "./FEN";
     }
 
     .white-controller, .black-controller {
-        background-color: rgba(25, 25, 26, 0.706);
+        background-color: var(--semi-offset-bg);
         padding: calc(var(--grid-size) / 8) calc(var(--grid-size) / 2);
         border-radius: calc(var(--grid-size) / 8);
     }
@@ -418,7 +418,7 @@ import { interpret, toGame } from "./FEN";
         width: calc(var(--grid-size) * 4.5);
         font-size: calc(var(--grid-size) / 5);
         color: lightgray;
-        background-color: rgb(25, 25, 26);
+        background-color: var(--dark-bg);
         border: none;
         border-radius: calc(var(--grid-size) / 12);
         outline-width: 0;
@@ -430,13 +430,13 @@ import { interpret, toGame } from "./FEN";
         /* font-size: 0.75em; */
         /* border-radius: 0.15em; */
         margin-top: calc(var(--grid-size) / 1.28);
-        background-color: rgb(28, 28, 29);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--dark-bg);
+        font-family: var(--default-font);
         font-size: calc(var(--grid-size) / 2.75);
         border-radius: calc(var(--grid-size) / 7);
     }
 
     button:hover {
-        background-color: rgb(22, 22, 23);
+        background-color: var(--dark3-bg);
     }
 </style>

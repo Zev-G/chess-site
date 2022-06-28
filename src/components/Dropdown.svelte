@@ -27,7 +27,7 @@
         border-radius: 10px;
         padding: 0.2em;
 
-        filter: drop-shadow(0 0 8px var(black));
-        background-color: rgb(25, 24, 27);
+        filter: drop-shadow(0 0 8px var(--off-black));
+        background-color: var(--dark-2);
     }
 </style>

@@ -197,7 +197,7 @@
         margin: 10px;
         display: grid;
         grid-template-columns: 100px 100px;
-        color: white;
+        color: var(--text-main);
         font-family: monospace;
     }
 
@@ -215,10 +215,10 @@
 
     .overlay {
         position: absolute;
-        background-color: rgb(25, 24, 27);
+        background-color: var(--dark-2);
         top: calc(var(--y) * var(--grid-size) - var(--grid-size) * 0.5);
         left: calc(var(--x) * var(--grid-size) - var(--grid-size) * 2);
-        filter: drop-shadow(0 0 10px black);
+        filter: drop-shadow(0 0 10px var(--off-black));
         border-radius: 1em;
     }
     
@@ -227,7 +227,7 @@
         grid-template-columns: repeat(var(--board-size), var(--grid-size));
         grid-template-rows: repeat(var(--board-size), var(--grid-size));
         grid-auto-flow: row;
-        filter: drop-shadow(0 0 10px black);
+        filter: drop-shadow(0 0 10px var(--off-black));
         transition: opacity 0.5s;
         -webkit-user-drag: none;
         user-select: none;
