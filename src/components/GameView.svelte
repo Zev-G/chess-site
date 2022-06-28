@@ -13,8 +13,10 @@
     import BoardDataGate from "./BoardDataGate";
     import GameSideBar from "./GameSideBar.svelte";
     import PastMove from "./PastMove";
-import { transition_out } from "svelte/internal";
-import { interpret, toGame } from "./FEN";
+    import { transition_out } from "svelte/internal";
+    import { interpret, toGame } from "./FEN";
+    import FaCode from 'svelte-icons/fa/FaCode.svelte';
+    import FaGlobeAfrica from 'svelte-icons/fa/FaGlobeAfrica.svelte';
 
     export let game: Game;
     let teamWon: number = game.checkWinState();
@@ -213,7 +215,7 @@ import { interpret, toGame } from "./FEN";
                         </div>
                         <h2>FEN</h2>
                         <input type="text" name="" id="" bind:value={fen} placeholder="Set a F.E.N. for the game here.">
-                        <button on:click={startGame}>Start Game</button>
+                        <button class="start-game" on:click={startGame}>Start Game</button>
                     </div>
                 </div>
                     <div class={"board" + (showingPopup ? " grayed-out" : "")} style={showBoard ? "" : "pointer-events: none;"}>
@@ -278,6 +280,24 @@ import { interpret, toGame } from "./FEN";
                 startGame();
             }
         }} on:restartgame={restartGame}/>
+        <div class="links">
+            <a href="https://github.com/Zev-G/chess-site">
+                <button>
+                    <div class="link-button">
+                        <FaCode />
+                        Code
+                    </div>
+                </button>
+            </a>
+            <a href="https://www.zevg.ca">
+                <button>
+                    <div class="link-button">
+                        <FaGlobeAfrica />
+                        Website
+                    </div>
+                </button>
+            </a>
+        </div>
     {/if}
 </div>
 
@@ -426,7 +446,7 @@ import { interpret, toGame } from "./FEN";
         opacity: 0.5; */
     }
 
-    button {
+    .start-game {
         /* font-size: 0.75em; */
         /* border-radius: 0.15em; */
         margin-top: calc(var(--grid-size) / 1.28);
@@ -436,7 +456,36 @@ import { interpret, toGame } from "./FEN";
         border-radius: calc(var(--grid-size) / 7);
     }
 
-    button:hover {
+    .start-game:hover {
         background-color: var(--dark3-bg);
+    }
+
+    .link-button {
+        display: flex;
+        opacity: 0.5;
+        gap: 0.5vw;
+        font-size: clamp(10px, 1vw, 15px);;
+    }
+
+    .links {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        gap: 0.5vw;
+        margin: 0.2vw;
+    }
+
+    .links button {
+        padding: 0.3vw 1vw;
+        background-color: transparent;
+    }
+
+    .links button:hover {
+        background-color: var(--semi-offset-bg);
+    }
+
+    .link-button :global(svg) {
+        height: clamp(15px, 1.5vw, 20px);
     }
 </style>
