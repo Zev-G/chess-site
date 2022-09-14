@@ -1,5 +1,5 @@
 <script lang=ts>
-    import { createEventDispatcher, tick } from "svelte";
+    import { createEventDispatcher, onMount, tick } from "svelte";
 
     import { CastleMove, imageMap, pieceKind, pieceName, pieceTeam, type Move } from "./Chess";
     import type PastMove from "./PastMove";
@@ -29,20 +29,54 @@
     function restartGame() {
         dispatch("restartgame", {});
     }
+
+    let query = "(orientation: portrait)";
+    let mql;
+    let mqlListener;
+    let wasMounted;
+    let matches = true;
+
+    onMount(() => {
+        wasMounted = true;
+        return () => {
+            removeActiveListener();
+        };
+    });
+
+    $: {
+        if (wasMounted) {
+            removeActiveListener();
+            addNewListener();
+        }
+    }
+
+    function addNewListener() {
+        mql = window.matchMedia(query);
+        mqlListener = (result) => matches = result.matches;
+        mql.addEventListener("change", mqlListener);
+        matches = mql.matches;
+    }
+    function removeActiveListener() {
+        if (mql && mqlListener) {
+            mql.removeEventListener("change", mqlListener);
+        }
+    }
 </script>
 
 <div class="side-bar">
-    <div class="header">
-        Moves
-    </div>
-    <div class="content" bind:this={content}>
-        {#each moveHistory as move}
-            <div class="move">
-                <img src={imageMap[move.moving]} alt="chess piece">
-                <p>{move.formattedString()}</p>
-            </div>
-        {/each}
-    </div>
+    {#if !matches}
+        <div class="header">
+            Moves
+        </div>
+        <div class="content" bind:this={content}>
+            {#each moveHistory as move}
+                <div class="move">
+                    <img src={imageMap[move.moving]} alt="chess piece">
+                    <p>{move.formattedString()}</p>
+                </div>
+            {/each}
+        </div>
+    {/if}
     <div class="footer">
         <button on:click={newGame}>New Game</button>
         <button class="restart-game" on:click={restartGame}><IoMdRefresh/></button>
@@ -52,6 +86,7 @@
 <style>
     .side-bar {
         height: calc(var(--grid-size) * 8);
+        margin-left: calc(var(--grid-size) * 0.2);
         display: grid;
         grid-template-rows: auto 1fr auto;
         background-color: rgb(49, 49, 52);
@@ -61,6 +96,15 @@
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         color: var(--text-main);
         filter: drop-shadow(0 0 10px var(--dark-overlay));
+    }
+
+    @media (orientation: portrait) {
+        .side-bar {
+            margin-top: calc(var(--grid-size) * 0.2);
+            margin-left: 0;
+            height: calc(var(--grid-size));
+            width: calc(var(--grid-size) * 8);
+        }
     }
 
     .footer, .header {
@@ -119,7 +163,7 @@
     }
 
     button {
-        font-size: calc(var(--side-bar-size) / 20);
+        font-size: calc(var(--grid-size) / 3.5);
         border-radius: 0.15em;
         background-color: var(--bg);
     }
@@ -129,8 +173,15 @@
     }
 
     .restart-game {
-        width: calc(var(--side-bar-size) / 6.6);
-        padding: calc(var(--side-bar-size) / 80) calc(var(--side-bar-size) / 30) 0 calc(var(--side-bar-size) / 30);
+        padding-top: calc(var(--grid-size) * 0.04);
+        padding-bottom: calc(var(--grid-size) * 0.01);
+        padding-right: calc(var(--grid-size) * 0.1);
+        padding-left: calc(var(--grid-size) * 0.1);
+    }
+
+    .restart-game :global(svg) {
+        width: calc(var(--grid-size) / 2);
+
     }
 
 </style>
