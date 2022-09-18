@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { findMoves, Move, PawnPromotion, pieceTeam, type Piece } from "./Chess";
+    import { findMoves, images, Move, PawnPromotion, pieceTeam, type Piece } from "./Chess";
     import { fade } from "svelte/transition";
     import BoardSpot from "./BoardSpot.svelte";
     import BoardPopup from "./BoardPopup.svelte";
@@ -236,11 +236,11 @@
                         {/each}
                     </div>
             </div>
-            {#if showingSettings && showBoard}
+            <!-- {#if showingSettings && showBoard}
                 <BoardPopup on:outclick={() => showingSettings = false}>
                     <GameSettings bind:whiteController bind:blackController game={game} on:click={() => showingSettings = false}/>
                 </BoardPopup>
-            {/if}
+            {/if} -->
             {#if promotingPawn !== null}
                 <BoardPopup>
                     <h1>Choose promotion</h1>
@@ -264,16 +264,16 @@
                 <BoardPopup>
                     <div>
                         {#if teamWon == 0}
-                            <img alt="tie" src="/tie.png">
+                            <img alt="tie" src={images.white.pawn}>
                         {:else if teamWon == 1}
-                            <img alt="white won" src="/white/king.png">
+                            <img alt="white won" src={images.white.king}>
                         {:else if teamWon == -1}
-                            <img alt="black won" src="/black/king.png">
+                            <img alt="black won" src={images.black.king}>
                         {/if}
                     </div>
                     <h1>{winText}</h1>
                     <div>
-                        <button on:click={restartGame}>Play again</button>
+                        <button class="play-again" on:click={restartGame}>Play again</button>
                     </div>
                 </BoardPopup>
             {/if}
@@ -314,15 +314,16 @@
 <style>
 
     h1 {
+        color: var(--text-main);
         margin-top: 0;
         margin-bottom: 0.1em;
     }
     img {
         width: calc(var(--grid-size) * 1.25);
     }
-    /* button {
+    .play-again {
         font-size: calc(var(--grid-size) * 0.175);
-    } */
+    }
     
     .promotion-options > button > img {
         width: calc(var(--grid-size) * 0.871);
@@ -481,14 +482,14 @@
         display: flex;
         opacity: 0.5;
         gap: 0.5vw;
-        font-size: clamp(10px, 1vw, 15px);;
+        font-size: clamp(10px, 1vw, 15px);
     }
 
     .links {
         position: absolute;
         bottom: 0;
         left: 0;
-        display: flex;
+        /* display: flex; */
         gap: 0.5vw;
         margin: 0.2vw;
     }

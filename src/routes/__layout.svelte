@@ -1,5 +1,5 @@
 <svelte:head>
-    <title>Chess</title>
+    <title>Chess by Zev</title>
     <link rel="stylesheet" href="/global.css"/>
 </svelte:head>
 
