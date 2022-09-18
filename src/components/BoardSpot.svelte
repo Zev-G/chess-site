@@ -126,9 +126,7 @@
             <img src={imageMap[piece]} alt="Chess piece">
         </div>
     {/if}
-    {#if showMove}
-        <div class="circle"></div>
-    {/if}
+    <div class={`circle ` + (showMove ? `showing` : `hiding`)}></div>
     {#if editable && value == -1 && !dataGate.dragging}
         <div class="add-piece" on:click={pieceRequested}>
             <FaPlus/>
@@ -153,10 +151,20 @@
     }
 
     .circle {
-        width: calc(var(--grid-size) / 3.5);
-        height: calc(var(--grid-size) / 3.5);
+        transition: width 0.1s, height 0.1s, opacity 0.1s;
         border-radius: 50%;
         background-color: var(--dark-overlay);
+    }
+    .circle.hiding {
+        transition: width 0.05s, height 0.05s, opacity 0.1s;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .circle.showing {
+        opacity: 1;
+        width: calc(var(--grid-size) / 3.5);
+        height: calc(var(--grid-size) / 3.5);
     }
 
     .board-spot {
