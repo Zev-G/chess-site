@@ -1,5 +1,5 @@
 <script lang=ts>
-    import { copyBoard, defaultBoard, imageMap, pieceKind } from "./Chess";
+    import { copyBoard, defaultBoard, imageMap, images, pieceKind } from "./Chess";
     import { outclick } from "./outclick";
     import BoardSpot from "./BoardSpot.svelte";
     import BoardDataGate from "./BoardDataGate";
@@ -123,36 +123,36 @@
             <div class="overlay" style={`--x: ${piecesPopupX}; --y: ${piecesPopupY};`} use:outclick on:outclick={() => showingPieceOptions = false}>
                 <div class="piece-options">
                     <button on:click={() => choosePiece(7)}>
-                        <img alt="queen" src={`white/queen.png`}>
+                        <img alt="queen" src={images.white.queen}>
                     </button>
                     <button on:click={() => choosePiece(6)}>
-                        <img alt="rook" src={`/white/rook.png`}>
+                        <img alt="rook" src={images.white.rook}>
                     </button>
                     <button on:click={() => choosePiece(4)}>
-                        <img alt="bishop" src={`/white/bishop.png`}>
+                        <img alt="bishop" src={images.white.bishop}>
                     </button>
                     <button on:click={() => choosePiece(3)}>
-                        <img alt="knight" src={`/white/knight.png`}>
+                        <img alt="knight" src={images.white.knight}>
                     </button>
                     <button on:click={() => choosePiece(2)}>
-                        <img alt="knight" src={`/white/pawn.png`}>
+                        <img alt="pawn" src={images.white.pawn}>
                     </button>
                 </div>
                 <div class="piece-options">
                     <button on:click={() => choosePiece(17)}>
-                        <img alt="queen" src={`/black/queen.png`}>
+                        <img alt="queen" src={images.black.queen}>
                     </button>
                     <button on:click={() => choosePiece(16)}>
-                        <img alt="rook" src={`/black/rook.png`}>
+                        <img alt="rook" src={images.black.rook}>
                     </button>
                     <button on:click={() => choosePiece(14)}>
-                        <img alt="bishop" src={`/black/bishop.png`}>
+                        <img alt="bishop" src={images.black.bishop}>
                     </button>
                     <button on:click={() => choosePiece(13)}>
-                        <img alt="knight" src={`/black/knight.png`}>
+                        <img alt="knight" src={images.black.knight}>
                     </button>
                     <button on:click={() => choosePiece(12)}>
-                        <img alt="knight" src={`/black/pawn.png`}>
+                        <img alt="pawn" src={images.black.pawn}>
                     </button>
                 </div>
             </div>
