@@ -31,7 +31,7 @@
     let showingSettings: boolean = false;
 
     let whiteController = "player";
-    let blackController = "player";
+    let blackController = "medium";
 
     let dataGate = new BoardDataGate();
 
